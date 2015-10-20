@@ -141,5 +141,8 @@ string Tty::readCmd() {
 	wgetnstr(stdscr, buff, 2047);
 	raw();
 	noecho();
+	wmove(stdscr, cmdRow, 0);
+	wclrtoeol(stdscr);
+	putMessage("");
 	return buff;
 }

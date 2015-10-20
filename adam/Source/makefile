@@ -14,7 +14,7 @@ eve.o : eve.cpp tty.hpp
 	
 tty.o : tty.cpp tty.hpp
 	$(cpp) $(cf) tty.cpp
-	
+		
 parse.o : parse.cpp parse.hpp
 	$(cpp) $(cf) parse.cpp
 	

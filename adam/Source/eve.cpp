@@ -31,6 +31,7 @@ class Eve {
   int flines;
   bool dispatchLoop;
   bool escapeActive = false;
+  bool selectActive = false;
   Tty tty;
   vector<string> fData;
   int fPtr;
@@ -59,6 +60,7 @@ class Eve {
   void cmdShowDefault();
   void cmdShowScreen();
   void cmdMark(string mrk);
+  void cmdLine(string lnr);
 #ifdef DBG
   ofstream dbg{"eve.log"};
 #endif
@@ -84,18 +86,23 @@ bool Eve::readFile(string fileName) {
 }
 
 void Eve::displayFile() {
-    clearScreen();
     int r = 0;
     int c = 0;
     int f = fPtr - row;
+    deb("fPtr=" << f << ", row=" << row << ", f=" << f);
     if (f < 0) f = 0;
     while (r <= maxRow && f < fData.size()) {
         deb("row=" << r << ", f=" << f << ", data=" << fData[f]);
         tty.mvPrint(r++, c, fData[f++]);
+        tty.clearToEol();
     }
     if (r <= maxRow) {
     	deb("printing EOF marker at line " << r)
-    	tty.mvPrint(r, c, "[End of file]");
+    	tty.mvPrint(r++, c, "[End of file]");
+    }
+    while (r <= maxRow) {
+    	tty.move(r++, 0);
+    	tty.clearToEol();
     }
     tty.move(row, col);
     tty.refresh();
@@ -139,10 +146,17 @@ void Eve::breakLine() {
   string sleft = tty.getLine(col);
   deb("left part =|" << sleft << "|");
   fData[fPtr] = sleft;
-  tty.move(++row, 0);
-  tty.insertLine();
-  deb("inserted new blank line");
-  tty.print(sright);
+  if (row < maxRow) {
+	  row++;
+	  deb("not at last line");
+	  tty.move(row, 0);
+	  tty.insertLine();
+	  deb("inserted new blank line");
+	  tty.print(sright);
+  } else {
+	  deb("on last line!");
+  }
+
   fData.insert(fData.begin() + ++fPtr, sright);
   this->col = 0;
   flines++;
@@ -289,11 +303,43 @@ void Eve::cmdMark(string mrk) {
 	tty.putMessage("mark " + mrk);
 }
 
+void Eve::cmdLine(string lnr) {
+	int lint = stoi(lnr);
+	if (lint < 1) {
+		tty.putMessage("Cannot move to line: " + lnr);
+		return;
+	}
+	if (lint > flines) {
+		tty.putMessage("Buffer has only " + to_string(flines) + " lines.  (Now going to End of Buffer).");
+		lint = flines;
+	}
+	deb("row=" << row << ", fPtr=" << fPtr << ", flines=" << flines);
+	--lint;		//lint is 1-offset while fPtr is 0-offset
+	col = 0;	//always goto beginning of line
+	int topLine = fPtr - row;	//first line in view
+	int botLine = topLine + maxRow;	//last line in view
+	if (botLine > flines) botLine = flines;
+	if (lint < topLine || lint > botLine) {
+		deb("outside current window");
+		if (lint < fPtr) {
+			row = 0;
+		} else {
+			row = maxRow;
+		}
+	} else {
+		deb("inside current window");
+		row += lint - fPtr;
+	}
+	fPtr = lint;
+	displayFile();
+}
+
 void Eve::readCommand() {
 	static vector<pair<int, string>> ptab {
 		{1, "show default"},
 		{2, "show screen"},
 		{3, "mark *"},
+		{4, "line *"},
     };
 	Parse parse {ptab};
 	string cmd = tty.readCmd();
@@ -304,6 +350,7 @@ void Eve::readCommand() {
 	case  1 : cmdShowDefault(); break;
 	case  2 : cmdShowScreen(); break;
 	case  3 : cmdMark(parse.getParam()); break;
+	case  4 : cmdLine(parse.getParam()); break;
 	}
 
 }
@@ -352,6 +399,7 @@ bool Eve::dispatch() {
 	if (escapeActive) {
 		processEscape();
 	} else {
+		if (key == -1) saveExit();
 		if (key == 0) return true;
 		if (key == 4) debugDump();
 		if (key == 5) gotoEol();
@@ -388,6 +436,7 @@ Eve::Eve(string fileName) {
 	displayStatus();
 	key = 0;
     while (Eve::dispatch()) {
+    	deb("row=" << row << "/" << maxRow << ", col=" << col << ", fPtr=" << fPtr << ", flines=" << flines);
     	key = tty.mvGetKey(row, col);
     }
 }
