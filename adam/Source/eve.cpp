@@ -6,6 +6,7 @@
 #include <list>
 #include <vector>
 #include <sstream>
+#include <unordered_map>
 
 //#define DBG 0
 
@@ -21,6 +22,8 @@ struct Buff {
 #define deb(x) //
 #endif
 
+
+
 class Eve {
   int row;
   int col;
@@ -32,9 +35,12 @@ class Eve {
   bool dispatchLoop;
   bool escapeActive = false;
   bool selectActive = false;
+  int selectLine;
+  int selectCol;
   Tty tty;
   vector<string> fData;
   int fPtr;
+  unordered_map<string, int> markMap;
   bool readFile(string fileName);
   void displayFile();
   bool dispatch();
@@ -57,10 +63,15 @@ class Eve {
   void saveExit();
   void processEscape();
   void readCommand();
+  void gotoLine(int lnr);
   void cmdShowDefault();
   void cmdShowScreen();
   void cmdMark(string mrk);
+  void cmdGoto(string mrk);
   void cmdLine(string lnr);
+  void cmdSelect();
+  void cmdDelete();
+  void cmdInsert();
 #ifdef DBG
   ofstream dbg{"eve.log"};
 #endif
@@ -240,11 +251,13 @@ void Eve::moveLeft() {
 }
 
 void Eve::moveRight() {
-  if (col < maxCol) {
-    col++;
-  } else {
-    deb("already at far left column")
-  }
+	if (col < maxCol) {
+		if (selectActive) {
+		}
+		col++;
+	} else {
+		deb("already at far left column")
+	}
 }
 
 void Eve::gotoSol() {
@@ -300,38 +313,65 @@ void Eve::cmdShowDefault() {
 }
 
 void Eve::cmdMark(string mrk) {
-	tty.putMessage("mark " + mrk);
+	markMap[mrk] = fPtr;
+	tty.putMessage("Mark " + mrk + " set.");
 }
 
-void Eve::cmdLine(string lnr) {
-	int lint = stoi(lnr);
-	if (lint < 1) {
-		tty.putMessage("Cannot move to line: " + lnr);
-		return;
+void Eve::cmdGoto(string mrk) {
+	unordered_map<string, int>::const_iterator find = markMap.find(mrk);
+	if (markMap.find(mrk) != markMap.end()) {
+		tty.putMessage("Going to mark " + mrk + ".");
+		int lnr = markMap[mrk];
+		gotoLine(lnr);
+	} else {
+		tty.putMessage("Mark " + mrk + " not set.");
 	}
-	if (lint > flines) {
-		tty.putMessage("Buffer has only " + to_string(flines) + " lines.  (Now going to End of Buffer).");
-		lint = flines;
-	}
+}
+
+void Eve::gotoLine(int inlnr) {
+	int lnr = inlnr;
+	if (lnr > flines - 1) lnr = flines - 1;
 	deb("row=" << row << ", fPtr=" << fPtr << ", flines=" << flines);
-	--lint;		//lint is 1-offset while fPtr is 0-offset
 	col = 0;	//always goto beginning of line
 	int topLine = fPtr - row;	//first line in view
 	int botLine = topLine + maxRow;	//last line in view
 	if (botLine > flines) botLine = flines;
-	if (lint < topLine || lint > botLine) {
+	if (lnr < topLine || lnr > botLine) {
 		deb("outside current window");
-		if (lint < fPtr) {
+		if (lnr < fPtr) {
 			row = 0;
 		} else {
 			row = maxRow;
 		}
 	} else {
 		deb("inside current window");
-		row += lint - fPtr;
+		row += lnr - fPtr;
 	}
-	fPtr = lint;
+	fPtr = lnr;
 	displayFile();
+}
+
+void Eve::cmdLine(string lnr) {
+	int lint = stoi(lnr) - 1;
+	if (lint < 0) {
+		tty.putMessage("Cannot move to line: " + lnr);
+		return;
+	}
+	if (lint > flines - 1) {
+		tty.putMessage("Buffer has only " + to_string(flines) + " lines.  (Now going to End of Buffer).");
+		lint = flines - 1;
+	}
+	gotoLine(lint);
+}
+
+void Eve::cmdSelect() {
+	if (selectActive) {
+
+	} else {
+		selectActive = true;
+		selectLine = fPtr;
+		selectCol = col;
+	}
 }
 
 void Eve::readCommand() {
@@ -340,6 +380,10 @@ void Eve::readCommand() {
 		{2, "show screen"},
 		{3, "mark *"},
 		{4, "line *"},
+		{5, "goto *"},
+		{6, "select"},
+		{7, "insert"},
+		{8, "delete"},
     };
 	Parse parse {ptab};
 	string cmd = tty.readCmd();
@@ -351,8 +395,11 @@ void Eve::readCommand() {
 	case  2 : cmdShowScreen(); break;
 	case  3 : cmdMark(parse.getParam()); break;
 	case  4 : cmdLine(parse.getParam()); break;
+	case  5 : cmdGoto(parse.getParam()); break;
+	case  6 : cmdGoto(parse.getParam()); break;
+	case  7 : cmdGoto(parse.getParam()); break;
+	case  8 : cmdGoto(parse.getParam()); break;
 	}
-
 }
 
 void Eve::processEscape() {
