@@ -16,20 +16,20 @@ Screen::Screen(Tty tty, int top, int bot) {
   this->col = 0;
 }
 
-int getRow() {
+int Screen::getRow() {
 	return this->row;
 }
 
-int getCol() {
+int Screen::getCol() {
 	return this->col;
 }
 
-void move() {
+void Screen::move() {
 
 }
 
-bool inView(BufferPosition bPos) {
-
+bool Screen::inView(BufferPosition bPos) {
+	return false;
 }
 
 
