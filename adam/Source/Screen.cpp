@@ -6,7 +6,8 @@
  */
 
 #include "Screen.hpp"
-#include "BufferPosition.hpp"
+
+#include "Position.hpp"
 
 Screen::Screen(Tty tty, int top, int bot) {
   this->tty = tty;
@@ -28,7 +29,7 @@ void Screen::move() {
 
 }
 
-bool Screen::inView(BufferPosition bPos) {
+bool Screen::inView(Position bPos) {
 	return false;
 }
 

@@ -5,18 +5,19 @@
  *      Author: joxmox
  */
 
-#ifndef BUFFERPOSITION_HPP_
-#define BUFFERPOSITION_HPP_
+#ifndef POSITION_HPP_
+#define POSITION_HPP_
 
-class BufferPosition {
+class Position {
 	int row;
 	int col;
 public:
-	BufferPosition();
-	BufferPosition(int row, int col);
+	Position();
+	Position(int row, int col);
 	int getCol();
 	int getRow();
 	bool onScreen();
+	void setPos(int row, int col);
 	void operator ++();
 	void operator ++(int) {++(*this);}
 	void operator --();
@@ -25,4 +26,4 @@ public:
 
 
 
-#endif /* BUFFERPOSITION_HPP_ */
+#endif /* POSITION_HPP_ */

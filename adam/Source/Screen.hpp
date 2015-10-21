@@ -8,7 +8,7 @@
 #ifndef SCREEN_HPP_
 #define SCREEN_HPP_
 
-#include "BufferPosition.hpp"
+#include "Position.hpp"
 #include "tty.hpp"
 
 class Screen {
@@ -22,7 +22,7 @@ public:
 	int getRow();
 	int getCol();
 	void move();
-	bool inView(BufferPosition bPos);
+	bool inView(Position bPos);
 };
 
 
