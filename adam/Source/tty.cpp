@@ -62,6 +62,10 @@ void Tty::reverseOn() {
 	wattron(stdscr, A_REVERSE);
 }
 
+void Tty::reverseOff() {
+	wattroff(stdscr, A_REVERSE);
+}
+
 void Tty::reverseCur() {
 	wchgat(stdscr, 1, A_REVERSE, 0, nullptr);
 }

@@ -34,6 +34,7 @@ public:
   void clearAll();
   void printRev();
   void reverseOn();
+  void reverseOff();
   void reverseCur();
   void reverseEOL();
   void reverseN(int n);
