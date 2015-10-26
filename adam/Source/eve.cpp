@@ -72,6 +72,7 @@ class Eve {
   void cmdSelect();
   void cmdDelete();
   void cmdInsert();
+  int cmpPos(int r1, int c1, int r2, int c2);
 #ifdef DBG
   ofstream dbg{"eve.log"};
 #endif
@@ -208,6 +209,10 @@ void Eve::moveDown() {
 	deb("flines=" << flines << ", row=" << row << ", size=" << fData.size() << ", fPtr=" << fPtr);
 	if (fPtr < fData.size() - 1) {
 		fPtr++;
+		if (selectActive) {
+			tty.move(row, col);
+			if (cmpPos(fPtr, col, selectLine, selectCol) > 0) tty.reverseEOL(); else tty.normalEOL();
+		}
 		if (row < maxRow) {
 			row++;
 		} else {
@@ -219,6 +224,10 @@ void Eve::moveDown() {
 			tty.move(maxRow, 0);
 			tty.print(fData[fPtr]);
 		}
+		if (selectActive) {
+			tty.move(row, 0);
+			if (cmpPos(fPtr, col, selectLine, selectCol) > 0) tty.reverseN(col); else tty.normalN(col);
+		}
 	} else {
 		deb("already on last line");
 	}
@@ -228,6 +237,10 @@ void Eve::moveUp() {
 	deb("flines=" << flines << ", row=" << row << ", size=" << fData.size() << ", fPtr=" << fPtr);
 	if (fPtr > 0) {
 		--fPtr;
+		if (selectActive) {
+			tty.move(row, 0);
+			if (cmpPos(fPtr, col, selectLine, selectCol) < 0) tty.reverseN(col); else tty.normalN(col);
+		}
 		if (row > 0) {
 			--row;
 		} else {
@@ -237,14 +250,33 @@ void Eve::moveUp() {
 			tty.move(0, 0);
 			tty.print(fData[fPtr]);
 		}
+		if (selectActive) {
+			tty.move(row, col);
+			if (cmpPos(fPtr, col, selectLine, selectCol) < 0) tty.reverseEOL(); else tty.normalEOL();
+		}
 	} else {
 		deb("already at first line of file");
 	}
 }
 
+int Eve::cmpPos(int r1, int c1, int r2, int c2) {
+	if (r1 > r2) return 1;
+	if (r1 < r2) return -1;
+	if (c1 > c2) return 1;
+	if (c1 < c2) return -1;
+	return 0;
+}
+
 void Eve::moveLeft() {
   if (col > 0) {
     --col;
+	if (selectActive) {
+		if (cmpPos(fPtr, col, selectLine, selectCol) < 0) {
+		    tty.reverseCur();
+		} else {
+			tty.normalCur();
+		}
+	}
   } else {
     deb("already at column 0");
   }
@@ -252,9 +284,14 @@ void Eve::moveLeft() {
 
 void Eve::moveRight() {
 	if (col < maxCol) {
-		if (selectActive) {
-		}
 		col++;
+		if (selectActive) {
+			if (cmpPos(fPtr, col, selectLine, selectCol) > 0) {
+			    tty.reverseCur();
+			} else {
+				tty.normalCur();
+			}
+		}
 	} else {
 		deb("already at far left column")
 	}
@@ -366,7 +403,19 @@ void Eve::cmdLine(string lnr) {
 
 void Eve::cmdSelect() {
 	if (selectActive) {
-
+		if (cmpPos(fPtr, col, selectLine, selectCol) > 0) {
+			int r = (fPtr - selectLine);
+			if (r > row) r = row;
+			tty.move(row -r, selectCol);
+			tty.normalEOL();
+			for (auto i=row-r+1; i<row; i++) {
+				move(i, 0);
+				tty.normalEOL();
+			}
+			tty.move(row, 0);
+			tty.normalEOL();
+		}
+		selectActive = false;
 	} else {
 		selectActive = true;
 		selectLine = fPtr;
@@ -463,6 +512,7 @@ bool Eve::dispatch() {
 		if (key == 261) moveRight();
 		if (key == 263) deleteChar();
 		if (key == 265) clearScreen();
+		if (key == 360) cmdSelect();
 		tty.move(row, col);
 		tty.refresh();
 	}

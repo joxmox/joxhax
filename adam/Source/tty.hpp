@@ -32,5 +32,13 @@ public:
   void clearToEol();
   void insertLine();
   void clearAll();
+  void printRev();
+  void reverseOn();
+  void reverseCur();
+  void reverseEOL();
+  void reverseN(int n);
+  void normalCur();
+  void normalEOL();
+  void normalN(int n);
   std::string readCmd();
 };

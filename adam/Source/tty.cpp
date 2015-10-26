@@ -58,8 +58,35 @@ void Tty::print(string s) {
   printw(s.c_str());
 }
 
+void Tty::reverseOn() {
+	wattron(stdscr, A_REVERSE);
+}
+
+void Tty::reverseCur() {
+	wchgat(stdscr, 1, A_REVERSE, 0, nullptr);
+}
+
+void Tty::reverseEOL() {
+	wchgat(stdscr, -1, A_REVERSE, 0, nullptr);
+}
+
+void Tty::reverseN(int n) {
+	wchgat(stdscr, n, A_REVERSE, 0, nullptr);
+}
+
+void Tty::normalCur() {
+	wchgat(stdscr, 1, 0, 0, nullptr);
+}
+
+void Tty::normalEOL() {
+	wchgat(stdscr, -1, 0, 0, nullptr);
+}
+
+void Tty::normalN(int n) {
+	wchgat(stdscr, n, 0, 0, nullptr);
+}
+
 void Tty::move(int r, int c) {
-  int sts;
   wmove(stdscr, r, c);
 }
 
