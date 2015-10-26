@@ -96,7 +96,10 @@ void Tty::normalN(int n) {
 
 void Tty::move(int r, int c) {
 <<<<<<< HEAD
+<<<<<<< HEAD
 //  int sts;
+=======
+>>>>>>> 6feec5f3b0332c5a334af3467111ad3190c93976
 =======
 >>>>>>> 6feec5f3b0332c5a334af3467111ad3190c93976
   wmove(stdscr, r, c);
