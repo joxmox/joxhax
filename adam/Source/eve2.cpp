@@ -78,7 +78,7 @@ class Eve {
 #endif
 public:
   Eve(string fileName);
-};
+};  
 
 bool Eve::readFile(string fileName) {
 	this->fileName = fileName;
@@ -92,25 +92,55 @@ bool Eve::readFile(string fileName) {
   }
   fPtr = 0;
   stringstream ss;
-  ss << flines << " lines read from " << fileName;
+  ss << flines << " lines read from " << fileName; 
   tty.putMessage(ss.str());
   return true;
 }
 
 void Eve::displayFile() {
     int r = 0;
-    int c = 0;
     int f = fPtr - row;
+    int mark1r, mark1c, mark2r, mark2c;
     deb("fPtr=" << f << ", row=" << row << ", f=" << f);
+    if (selectActive) {
+    	if (cmpPos(fPtr, col, selectLine, selectCol) == 1) {
+    		mark1r = fPtr;
+    		mark1c = col;
+    		mark2r = selectLine;
+    		mark2c = selectCol;
+    	} else {
+       		mark1r = fPtr;
+        	mark1c = col;
+        	mark2r = selectLine;
+       		mark2c = selectCol;
+    	}
+    }
     if (f < 0) f = 0;
     while (r <= maxRow && f < fData.size()) {
         deb("row=" << r << ", f=" << f << ", data=" << fData[f]);
-        tty.mvPrint(r++, c, fData[f++]);
+        if (selectActive) {
+        	if (f == selectLine) {
+        		if (f == mark1r) {
+        			tty.mvPrint(r, 0, fData[f].substr(0, mark1c));
+        			tty.reverseOn();
+        			tty.mvPrint(r, col, fData[f].substr(mark1c));
+        		}
+        		if (f == mark2r) {
+        			tty.mvPrint(r, 0, fData[f].substr(0, mark2c));
+        			tty.reverseOn();
+        			tty.mvPrint(r, col, fData[f].substr(mark2c));
+        		}
+        	}
+        } else {
+          tty.mvPrint(r, 0, fData[f]);
+        }
         tty.clearToEol();
+        f++;
+        r++;
     }
     if (r <= maxRow) {
     	deb("printing EOF marker at line " << r)
-    	tty.mvPrint(r++, c, "[End of file]");
+    	tty.mvPrint(r++, 0, "[End of file]");
     }
     while (r <= maxRow) {
     	tty.move(r++, 0);
@@ -128,14 +158,9 @@ void Eve::displayStatus() {
 }
 
 void Eve::insertChar() {
-  adjustLength();
-  deb("inserting " << key);
-  tty.putChar(key);
-  deb("line before = |" << fData[fPtr] << "|");
-  tty.move(row, 0);
-  fData[fPtr] = tty.getLine(fData[fPtr].length()+1);
-  deb("line after = |" << fData[fPtr] << "|");
-  col++;
+	adjustLength();
+	fData[fPtr].insert(fData[fPtr].begin() + col, key);
+	col++;
 }
 
 int Eve::adjustLength() {
@@ -147,55 +172,30 @@ int Eve::adjustLength() {
 }
 
 void Eve::breakLine() {
-  int curLen = adjustLength();
-  deb("current line =|" << fData[fPtr] << "|");
-  string sright = tty.getLine(curLen - this->col);
-  deb("right part =|" << sright << "|");
-  tty.clearToEol();
-  deb("cleared from cursor to eol");
-  tty.move(row, 0);
-  deb("moved to sol");
-  string sleft = tty.getLine(col);
-  deb("left part =|" << sleft << "|");
-  fData[fPtr] = sleft;
-  if (row < maxRow) {
-	  row++;
-	  deb("not at last line");
-	  tty.move(row, 0);
-	  tty.insertLine();
-	  deb("inserted new blank line");
-	  tty.print(sright);
-  } else {
-	  deb("on last line!");
-  }
-
-  fData.insert(fData.begin() + ++fPtr, sright);
-  this->col = 0;
-  flines++;
+	int curLen = adjustLength();
+	fData.insert(fData.begin() + fPtr + 1, fData[fPtr].substr(col));
+	fData[fPtr].erase(col);
+	col = 0;
+	fPtr++;
+	if (row < maxRow) row++;
+	flines++;
 }
 
 void Eve::deleteChar() {
-  int curLen = adjustLength();
-  if (col > 0) {
-    tty.move(row, --col);
-    tty.delChar();
-    tty.move(row, 0);
-    fData[fPtr] = tty.getLine(curLen - 1);
-  } else {
-    if (fPtr > 0) {
-      col = fData[fPtr-1].length();
-      string str = fData[fPtr];
-      tty.delLine();
-      tty.move(--row, col);
-      tty.print(str);
-      fData[fPtr-1] += fData[fPtr];
-      fData.erase(fData.begin() + fPtr--);
-      --flines;
-    }
-  }
+	int curLen = adjustLength();
+	if (col > 0) {
+		fData[fPtr].erase(fData[fPtr].begin() + --col);
+	} else {
+		if (fPtr > 0) {
+			col = fData[fPtr-1].length();
+			fData[fPtr-1] += fData[fPtr];
+			fData.erase(fData.begin() + fPtr--);
+		}
+		--flines;
+	}
 }
-
-
+      
+    
 void Eve::processCtrl() {
 }
 
@@ -209,10 +209,6 @@ void Eve::moveDown() {
 	deb("flines=" << flines << ", row=" << row << ", size=" << fData.size() << ", fPtr=" << fPtr);
 	if (fPtr < fData.size() - 1) {
 		fPtr++;
-		if (selectActive) {
-			tty.move(row, col);
-			if (cmpPos(fPtr, col, selectLine, selectCol) > 0) tty.reverseEOL(); else tty.normalEOL();
-		}
 		if (row < maxRow) {
 			row++;
 		} else {
@@ -224,10 +220,6 @@ void Eve::moveDown() {
 			tty.move(maxRow, 0);
 			tty.print(fData[fPtr]);
 		}
-		if (selectActive) {
-			tty.move(row, 0);
-			if (cmpPos(fPtr, col, selectLine, selectCol) > 0) tty.reverseN(col); else tty.normalN(col);
-		}
 	} else {
 		deb("already on last line");
 	}
@@ -237,10 +229,6 @@ void Eve::moveUp() {
 	deb("flines=" << flines << ", row=" << row << ", size=" << fData.size() << ", fPtr=" << fPtr);
 	if (fPtr > 0) {
 		--fPtr;
-		if (selectActive) {
-			tty.move(row, 0);
-			if (cmpPos(fPtr, col, selectLine, selectCol) < 0) tty.reverseN(col); else tty.normalN(col);
-		}
 		if (row > 0) {
 			--row;
 		} else {
@@ -249,10 +237,6 @@ void Eve::moveUp() {
 			tty.insertLine();
 			tty.move(0, 0);
 			tty.print(fData[fPtr]);
-		}
-		if (selectActive) {
-			tty.move(row, col);
-			if (cmpPos(fPtr, col, selectLine, selectCol) < 0) tty.reverseEOL(); else tty.normalEOL();
 		}
 	} else {
 		deb("already at first line of file");
@@ -270,13 +254,6 @@ int Eve::cmpPos(int r1, int c1, int r2, int c2) {
 void Eve::moveLeft() {
   if (col > 0) {
     --col;
-	if (selectActive) {
-		if (cmpPos(fPtr, col, selectLine, selectCol) < 0) {
-		    tty.reverseCur();
-		} else {
-			tty.normalCur();
-		}
-	}
   } else {
     deb("already at column 0");
   }
@@ -285,13 +262,6 @@ void Eve::moveLeft() {
 void Eve::moveRight() {
 	if (col < maxCol) {
 		col++;
-		if (selectActive) {
-			if (cmpPos(fPtr, col, selectLine, selectCol) > 0) {
-			    tty.reverseCur();
-			} else {
-				tty.normalCur();
-			}
-		}
 	} else {
 		deb("already at far left column")
 	}
@@ -322,8 +292,6 @@ void Eve::clearScreen() {
 
 void Eve::refreshScreen() {
   clearScreen();
-  displayFile();
-  displayStatus();
 }
 
 void Eve::debugDump() {
@@ -385,7 +353,6 @@ void Eve::gotoLine(int inlnr) {
 		row += lnr - fPtr;
 	}
 	fPtr = lnr;
-	displayFile();
 }
 
 void Eve::cmdLine(string lnr) {
@@ -403,24 +370,13 @@ void Eve::cmdLine(string lnr) {
 
 void Eve::cmdSelect() {
 	if (selectActive) {
-		if (cmpPos(fPtr, col, selectLine, selectCol) > 0) {
-			int r = (fPtr - selectLine);
-			if (r > row) r = row;
-			tty.move(row -r, selectCol);
-			tty.normalEOL();
-			for (auto i=row-r+1; i<row; i++) {
-				move(i, 0);
-				tty.normalEOL();
-			}
-			tty.move(row, 0);
-			tty.normalEOL();
-		}
 		selectActive = false;
 	} else {
 		selectActive = true;
 		selectLine = fPtr;
 		selectCol = col;
 	}
+
 }
 
 void Eve::readCommand() {
@@ -513,21 +469,20 @@ bool Eve::dispatch() {
 		if (key == 263) deleteChar();
 		if (key == 265) clearScreen();
 		if (key == 360) cmdSelect();
-		tty.move(row, col);
-		tty.refresh();
+		displayFile();
 	}
   return dispatchLoop;
 }
 
 Eve::Eve(string fileName) {
-	tty.init();
+	Tty tty;
 	row = 0;
 	col = 0;
 	fPtr = 0;
 	maxRow = tty.getHeight() - 4;
 	maxCol = tty.getWidth() - 1;
 	deb("tty created");
-//	int apa = tty.getHeight();
+	int apa = tty.getHeight();
 	readFile(fileName);
 	displayFile();
 	displayStatus();
@@ -551,3 +506,10 @@ int main(int args, char* argv[]) {
     	}
     }
 }
+
+
+
+
+
+
+
