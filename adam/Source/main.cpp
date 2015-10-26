@@ -6,11 +6,13 @@
  */
 
 #include <fstream>
+#include <iostream>
 #include "Adam.hpp"
 
 using namespace std;
 
 int main(int argc, char* argv[]) {
+	/*
     if (argc != 2) {
     	cout << "?Invalid number of parameters" << endl;
     	return 1;
@@ -21,6 +23,8 @@ int main(int argc, char* argv[]) {
 		return 1;
     }
 	Adam adam(argv[1]);
+	*/
+	Adam adam("apa.txt");
 	if (adam.endedInError()) {
 		cout << adam.getExitError() << endl;
 	}

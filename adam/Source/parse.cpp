@@ -22,7 +22,7 @@ Parse::Parse(vector<pair<int, string>> iTable) {
     string refCmd = i.second;
     vector<string> refCmds = split(refCmd, "\\s+");
     string regStr = "^\\s*";
-    auto k = refCmds.begin();
+ //   auto k = refCmds.begin();
     for (auto j=refCmds.begin(); j<refCmds.end(); j++) {
       if (j != refCmds.begin()) regStr += "\\s+";
       if (*j == "*") {

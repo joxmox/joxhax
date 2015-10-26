@@ -9,6 +9,7 @@
 #define BUFFER_HPP_
 
 #include <vector>
+#include <fstream>
 
 #include "Position.hpp"
 
@@ -17,10 +18,9 @@ class Buffer {
 	std::string file;
 	std::string name;
 	std::vector<std::string> data;
-	Tty tty;
 public:
-	Buffer(std::string fileName, std::string bufName, Tty& tty);
-	void readFile();
+	Buffer(std::string buffName);
+	int readFile(std::string fileName);
 	int getChar();
 	std::string& currentLine();
 };

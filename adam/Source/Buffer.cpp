@@ -5,24 +5,21 @@
  *      Author: sebis
  */
 
+#include <string>
 #include "Buffer.hpp"
-
-#include "Source/Position.hpp"
-#include "tty.hpp"
+#include "Position.hpp"
+#include <iostream>
 
 using namespace std;
 
-Buffer::Buffer (string fileName, string buffName, Tty& tty) {
+Buffer::Buffer (string buffName) {
 	pos = Position(0, 0);
-	file = fileName;
 	name = buffName;
-	if (file != "") {
-		this->readFile();
-	}
-	this->tty = tty;
 }
 
-void Buffer::readFile() {
+int Buffer::readFile(string fileName) {
+	cout << "in readfile " << fileName << endl;
+	file = fileName;
 	data.clear();
 	pos.setPos(0, 0);
 	ifstream inf{file};
@@ -35,12 +32,14 @@ void Buffer::readFile() {
 		data.push_back(line);
 		cnt++;
 	}
-	stringstream ss;
-	ss << cnt << " lines read from " << file;
-	tty.putMessage(ss.str());
+	return cnt;
 }
 
 string& Buffer::currentLine() {
-	return string& data[pos.row];
+	return data[pos.getRow()];
+}
+
+int Buffer::getChar() {
+	return 1;
 }
 

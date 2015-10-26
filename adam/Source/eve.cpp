@@ -77,7 +77,7 @@ class Eve {
 #endif
 public:
   Eve(string fileName);
-};  
+};
 
 bool Eve::readFile(string fileName) {
 	this->fileName = fileName;
@@ -91,7 +91,7 @@ bool Eve::readFile(string fileName) {
   }
   fPtr = 0;
   stringstream ss;
-  ss << flines << " lines read from " << fileName; 
+  ss << flines << " lines read from " << fileName;
   tty.putMessage(ss.str());
   return true;
 }
@@ -133,7 +133,7 @@ void Eve::insertChar() {
   deb("line before = |" << fData[fPtr] << "|");
   tty.move(row, 0);
   fData[fPtr] = tty.getLine(fData[fPtr].length()+1);
-  deb("line after = |" << fData[fPtr] << "|"); 
+  deb("line after = |" << fData[fPtr] << "|");
   col++;
 }
 
@@ -146,7 +146,7 @@ int Eve::adjustLength() {
 }
 
 void Eve::breakLine() {
-  int curLen = adjustLength(); 
+  int curLen = adjustLength();
   deb("current line =|" << fData[fPtr] << "|");
   string sright = tty.getLine(curLen - this->col);
   deb("right part =|" << sright << "|");
@@ -193,8 +193,8 @@ void Eve::deleteChar() {
     }
   }
 }
-      
-    
+
+
 void Eve::processCtrl() {
 }
 
@@ -470,14 +470,14 @@ bool Eve::dispatch() {
 }
 
 Eve::Eve(string fileName) {
-	Tty tty;
+	tty.init();
 	row = 0;
 	col = 0;
 	fPtr = 0;
 	maxRow = tty.getHeight() - 4;
 	maxCol = tty.getWidth() - 1;
 	deb("tty created");
-	int apa = tty.getHeight();
+//	int apa = tty.getHeight();
 	readFile(fileName);
 	displayFile();
 	displayStatus();
@@ -501,10 +501,3 @@ int main(int args, char* argv[]) {
     	}
     }
 }
-
-
-
-
-
-
-

@@ -6,34 +6,38 @@
 using namespace std;
 
 Tty::Tty() {
-  int sts;
-  WINDOW *iscr = NULL;
 
-  iscr = initscr();
-  if (iscr == NULL) {
-    deb << "initscr: failed" << endl;
-  } else {
-    deb << "initscr: success" << endl;
-  }
+}
 
-  sts = start_color();
-  deb << "start_color: " << sts << endl;
+void Tty::init() {
+	  int sts;
+	  WINDOW *iscr = NULL;
 
-  sts = getmaxyx(stdscr, this->height, this->width);
+	  iscr = initscr();
+	  if (iscr == NULL) {
+	    deb << "initscr: failed" << endl;
+	  } else {
+	    deb << "initscr: success" << endl;
+	  }
 
-  sts = raw();
-  sts = meta(NULL, true);
-  sts = nonl();
-  sts = keypad(stdscr, true);
-  sts = noecho();
+	  sts = start_color();
+	  deb << "start_color: " << sts << endl;
 
-  msgRow = height - 1;
-  cmdRow = height - 2;
-  stsRow = height - 3;
-  maxRow = height - 4;
+	  sts = getmaxyx(stdscr, this->height, this->width);
 
-  this->row = 0;
-  this->col = 0;
+	  sts = raw();
+	  sts = meta(NULL, true);
+	  sts = nonl();
+	  sts = keypad(stdscr, true);
+	  sts = noecho();
+
+	  msgRow = height - 1;
+	  cmdRow = height - 2;
+	  stsRow = height - 3;
+	  maxRow = height - 4;
+
+	  this->row = 0;
+	  this->col = 0;
 }
 
 Tty::~Tty() {
@@ -59,7 +63,7 @@ void Tty::print(string s) {
 }
 
 void Tty::move(int r, int c) {
-  int sts;
+//  int sts;
   wmove(stdscr, r, c);
 }
 
@@ -80,7 +84,7 @@ int Tty::mvGetKey(int r, int c) {
 }
 
 void Tty::putChar(int x) {
-  winsch(stdscr, x); 
+  winsch(stdscr, x);
 }
 
 string Tty::getLine(int l) {
@@ -146,3 +150,5 @@ string Tty::readCmd() {
 	putMessage("");
 	return buff;
 }
+
+
