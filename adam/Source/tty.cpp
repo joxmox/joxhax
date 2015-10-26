@@ -6,10 +6,11 @@
 using namespace std;
 
 Tty::Tty() {
-
+    deb << "constructor" << endl;
 }
 
 void Tty::init() {
+	  deb << "initializeing..." << endl;
 	  int sts;
 	  WINDOW *iscr = NULL;
 
@@ -95,13 +96,6 @@ void Tty::normalN(int n) {
 }
 
 void Tty::move(int r, int c) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-//  int sts;
-=======
->>>>>>> 6feec5f3b0332c5a334af3467111ad3190c93976
-=======
->>>>>>> 6feec5f3b0332c5a334af3467111ad3190c93976
   wmove(stdscr, r, c);
 }
 

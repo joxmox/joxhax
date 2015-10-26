@@ -40,6 +40,6 @@ string& Buffer::currentLine() {
 }
 
 int Buffer::getChar() {
-	return 1;
+
 }
 
