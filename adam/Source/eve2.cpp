@@ -127,7 +127,7 @@ void Eve::displayFile() {
         		}
         		if (f == mark2r) {
         			tty.mvPrint(r, 0, fData[f].substr(0, mark2c));
-        			tty.reverseOn();
+        			tty.reverseOff();
         			tty.mvPrint(r, col, fData[f].substr(mark2c));
         		}
         	}
@@ -172,7 +172,7 @@ int Eve::adjustLength() {
 }
 
 void Eve::breakLine() {
-	int curLen = adjustLength();
+	adjustLength();
 	fData.insert(fData.begin() + fPtr + 1, fData[fPtr].substr(col));
 	fData[fPtr].erase(col);
 	col = 0;
@@ -182,7 +182,7 @@ void Eve::breakLine() {
 }
 
 void Eve::deleteChar() {
-	int curLen = adjustLength();
+	adjustLength();
 	if (col > 0) {
 		fData[fPtr].erase(fData[fPtr].begin() + --col);
 	} else {
@@ -482,9 +482,12 @@ Eve::Eve(string fileName) {
 	maxRow = tty.getHeight() - 4;
 	maxCol = tty.getWidth() - 1;
 	deb("tty created");
-	int apa = tty.getHeight();
+	tty.init();
+	deb("tty initialized");
 	readFile(fileName);
+	deb("file read");
 	displayFile();
+	deb("file displayed");
 	displayStatus();
 	key = 0;
     while (Eve::dispatch()) {

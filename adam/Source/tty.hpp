@@ -1,3 +1,7 @@
+#ifndef TTY_HPP_
+#define TTY_HPP_
+
+
 #include <ncurses.h>
 #include <string>
 #include <fstream>
@@ -15,6 +19,7 @@ class Tty {
 public:
   Tty();
   ~Tty();
+  void init();
   int getHeight();
   int getWidth();
   void putChar(int x);
@@ -43,3 +48,5 @@ public:
   void normalN(int n);
   std::string readCmd();
 };
+
+#endif

@@ -29,6 +29,11 @@ bool Position::onScreen() {
 	return true;
 }
 
+void Position::setPos(int r, int c) {
+	row = r;
+	col = c;
+}
+
 void Position::operator ++() {
 	this->row++;
 }

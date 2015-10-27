@@ -6,34 +6,39 @@
 using namespace std;
 
 Tty::Tty() {
-  int sts;
-  WINDOW *iscr = NULL;
+    deb << "constructor" << endl;
+}
 
-  iscr = initscr();
-  if (iscr == NULL) {
-    deb << "initscr: failed" << endl;
-  } else {
-    deb << "initscr: success" << endl;
-  }
+void Tty::init() {
+	  deb << "initializeing..." << endl;
+	  int sts;
+	  WINDOW *iscr = NULL;
 
-  sts = start_color();
-  deb << "start_color: " << sts << endl;
+	  iscr = initscr();
+	  if (iscr == NULL) {
+	    deb << "initscr: failed" << endl;
+	  } else {
+	    deb << "initscr: success" << endl;
+	  }
 
-  sts = getmaxyx(stdscr, this->height, this->width);
+	  sts = start_color();
+	  deb << "start_color: " << sts << endl;
 
-  sts = raw();
-  sts = meta(NULL, true);
-  sts = nonl();
-  sts = keypad(stdscr, true);
-  sts = noecho();
+	  sts = getmaxyx(stdscr, this->height, this->width);
 
-  msgRow = height - 1;
-  cmdRow = height - 2;
-  stsRow = height - 3;
-  maxRow = height - 4;
+	  sts = raw();
+	  sts = meta(NULL, true);
+	  sts = nonl();
+	  sts = keypad(stdscr, true);
+	  sts = noecho();
 
-  this->row = 0;
-  this->col = 0;
+	  msgRow = height - 1;
+	  cmdRow = height - 2;
+	  stsRow = height - 3;
+	  maxRow = height - 4;
+
+	  this->row = 0;
+	  this->col = 0;
 }
 
 Tty::~Tty() {
@@ -111,7 +116,7 @@ int Tty::mvGetKey(int r, int c) {
 }
 
 void Tty::putChar(int x) {
-  winsch(stdscr, x); 
+  winsch(stdscr, x);
 }
 
 string Tty::getLine(int l) {
@@ -177,3 +182,5 @@ string Tty::readCmd() {
 	putMessage("");
 	return buff;
 }
+
+

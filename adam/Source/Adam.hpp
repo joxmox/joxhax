@@ -21,11 +21,13 @@ class Adam {
 	std::unordered_map<std::string, std::vector<Buffer>::iterator> bufferMap;
 	std::vector<Buffer>::iterator buffer;
 	Tty tty;
+	int key;
 public:
 	Adam(std::string fileName);
-	std::vector<Buffer>::iterator createBuffer(std::string fileName, std::string bufName, Tty& tty);
+	std::vector<Buffer>::iterator createBuffer(std::string buffName);
 	bool endedInError();
 	std::string getExitError();
+	void dispatchKey(int);
 };
 
 
