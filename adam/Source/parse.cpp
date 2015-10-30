@@ -47,6 +47,7 @@ Parse::Parse(vector<pair<int, string>> iTable) {
 int Parse::decode(string cmd) {
   int res = 0;
   int cnt = 0;
+  if (regex_match(cmd, regex("^\\s*$"))) return -2;
   smatch pMatch;
   for (auto p : pTable) {
     if (regex_match(cmd, pMatch, p.second)) {

@@ -73,6 +73,7 @@ class Eve {
   void cmdDelete();
   void cmdInsert();
   int cmpPos(int r1, int c1, int r2, int c2);
+  void printStr(string s);
 #ifdef DBG
   ofstream dbg{"eve.log"};
 #endif
@@ -97,6 +98,20 @@ bool Eve::readFile(string fileName) {
   return true;
 }
 
+void Eve::printStr(string s) {
+	string tmp = s;
+	int right = col + tmp.length();
+	deb("Right=" << right)
+	if (right > maxCol) {
+		deb("pos=" << maxCol-col);
+		deb("tmp before:" << tmp);
+		tmp.erase(maxCol-col);
+		deb("tmp after:"<< tmp);
+		tmp += string(1, 274);
+	}
+	tty.print(tmp, -1);
+}
+
 void Eve::displayFile() {
     int r = 0;
     int c = 0;
@@ -105,7 +120,8 @@ void Eve::displayFile() {
     if (f < 0) f = 0;
     while (r <= maxRow && f < fData.size()) {
         deb("row=" << r << ", f=" << f << ", data=" << fData[f]);
-        tty.mvPrint(r++, c, fData[f++]);
+        tty.move(r++, c);
+        tty.print(fData[f++], -1);
         tty.clearToEol();
     }
     if (r <= maxRow) {
@@ -130,12 +146,13 @@ void Eve::displayStatus() {
 void Eve::insertChar() {
   adjustLength();
   deb("inserting " << key);
+  fData[fPtr].insert(1, string(1, key));
   tty.putChar(key);
   deb("line before = |" << fData[fPtr] << "|");
   tty.move(row, 0);
-  fData[fPtr] = tty.getLine(fData[fPtr].length()+1);
+//  fData[fPtr] = tty.getLine(fData[fPtr].length()+1);
   deb("line after = |" << fData[fPtr] << "|");
-  col++;
+  if (col < maxCol) col++;
 }
 
 int Eve::adjustLength() {
@@ -149,13 +166,13 @@ int Eve::adjustLength() {
 void Eve::breakLine() {
   int curLen = adjustLength();
   deb("current line =|" << fData[fPtr] << "|");
-  string sright = tty.getLine(curLen - this->col);
+  string sright = fData[fPtr].substr(col, curLen - col);
   deb("right part =|" << sright << "|");
   tty.clearToEol();
   deb("cleared from cursor to eol");
   tty.move(row, 0);
   deb("moved to sol");
-  string sleft = tty.getLine(col);
+  string sleft = fData[fPtr].substr(0, col);
   deb("left part =|" << sleft << "|");
   fData[fPtr] = sleft;
   if (row < maxRow) {
@@ -164,7 +181,8 @@ void Eve::breakLine() {
 	  tty.move(row, 0);
 	  tty.insertLine();
 	  deb("inserted new blank line");
-	  tty.print(sright);
+	  col = 0;
+	  printStr(sright);
   } else {
 	  deb("on last line!");
   }
@@ -175,19 +193,19 @@ void Eve::breakLine() {
 }
 
 void Eve::deleteChar() {
-  int curLen = adjustLength();
+  adjustLength();
   if (col > 0) {
     tty.move(row, --col);
     tty.delChar();
+    fData[fPtr].erase(col, 1);
     tty.move(row, 0);
-    fData[fPtr] = tty.getLine(curLen - 1);
   } else {
     if (fPtr > 0) {
       col = fData[fPtr-1].length();
       string str = fData[fPtr];
       tty.delLine();
       tty.move(--row, col);
-      tty.print(str);
+      printStr(str);
       fData[fPtr-1] += fData[fPtr];
       fData.erase(fData.begin() + fPtr--);
       --flines;
@@ -222,7 +240,7 @@ void Eve::moveDown() {
 			tty.move(0, 0);
 			tty.delLine();
 			tty.move(maxRow, 0);
-			tty.print(fData[fPtr]);
+			printStr(fData[fPtr]);
 		}
 		if (selectActive) {
 			tty.move(row, 0);
@@ -248,7 +266,7 @@ void Eve::moveUp() {
 			tty.move(0, 0);
 			tty.insertLine();
 			tty.move(0, 0);
-			tty.print(fData[fPtr]);
+			printStr(fData[fPtr]);
 		}
 		if (selectActive) {
 			tty.move(row, col);
@@ -283,7 +301,7 @@ void Eve::moveLeft() {
 }
 
 void Eve::moveRight() {
-	if (col < maxCol) {
+	if (col < maxCol ) {
 		col++;
 		if (selectActive) {
 			if (cmpPos(fPtr, col, selectLine, selectCol) > 0) {
@@ -414,12 +432,14 @@ void Eve::cmdSelect() {
 			}
 			tty.move(row, 0);
 			tty.normalEOL();
-		}
+		}tty.putMessage("Selection canceled.");
 		selectActive = false;
+
 	} else {
 		selectActive = true;
 		selectLine = fPtr;
 		selectCol = col;
+		tty.putMessage("Move the test cursor to select text.");
 	}
 }
 
@@ -436,8 +456,10 @@ void Eve::readCommand() {
     };
 	Parse parse {ptab};
 	string cmd = tty.readCmd();
+	deb("parsing command: " << cmd);
 	int res = parse.decode(cmd);
 	switch(res) {
+	case -2 : tty.putMessage("No command given."); break;
 	case -1 : tty.putMessage("Ambigous command."); break;
 	case  0 : tty.putMessage("Unrecognized command."); break;
 	case  1 : cmdShowDefault(); break;
@@ -512,6 +534,7 @@ bool Eve::dispatch() {
 		if (key == 261) moveRight();
 		if (key == 263) deleteChar();
 		if (key == 265) clearScreen();
+		if (key == 276) readCommand();
 		if (key == 360) cmdSelect();
 		tty.move(row, col);
 		tty.refresh();

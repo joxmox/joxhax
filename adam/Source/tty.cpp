@@ -54,13 +54,12 @@ int Tty::getWidth() {
 }
 
 void Tty::mvPrint(int r, int c, string s) {
-  int sts;
-  sts = mvprintw(r, c, s.c_str());
-  deb << "mvwprint sts: " << sts << endl;
+  wmove(stdscr, r, c);
+  waddstr(stdscr, s.c_str());
 }
 
-void Tty::print(string s) {
-  printw(s.c_str());
+void Tty::print(string s,int n) {
+  waddnstr(stdscr, s.c_str(), n);
 }
 
 void Tty::reverseOn() {
@@ -127,14 +126,14 @@ string Tty::getLine(int l) {
 
 void Tty::putMessage(string s) {
   move(msgRow, 0);
-  print(s.c_str());
+  print(s.c_str(), 80);
   wclrtoeol(stdscr);
 }
 
 void Tty::putStatus(string s) {
   move(stsRow, 0);
   wattron(stdscr, A_REVERSE);
-  print(s.c_str());
+  print(s.c_str(), 80);
   wattroff(stdscr, A_REVERSE);
 }
 

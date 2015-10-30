@@ -26,7 +26,7 @@ public:
   void delChar();
   void delLine();
   std::string getLine(int l);
-  void print(std::string s);
+  void print(std::string s, int n);
   void mvPrint(int r, int c, std::string s);
   void move(int r, int c);
   void refresh();
