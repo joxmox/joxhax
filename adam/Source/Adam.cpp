@@ -16,8 +16,8 @@
 
 using namespace std;
 
-//vector<*Buffer> bufferVec;
-unordered_map<string, *Buffer> bufferMap;
+vector<Buffer *> bufferVec;
+unordered_map<string, Buffer *> bufferMap;
 Buffer *buffer;
 Tty *tty;
 int key;
@@ -64,7 +64,7 @@ int main(int argc, char* argv[]) {
 		return 1;
     }
 	tty = new Tty;
-	scr = new Screen;
+//	scr = new Screen;
 	buffer = new Buffer(fileName);
 	bufferVec.push_back(buffer);
 	bufferMap[fileName] = buffer;
