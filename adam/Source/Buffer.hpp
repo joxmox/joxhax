@@ -14,7 +14,11 @@
 #include "Position.hpp"
 
 class Buffer {
+	int topLine;
+	int maxLine;
+	int curLine;
 	Position pos;
+
 	std::string file;
 	std::string name;
 	std::vector<std::string> data;
@@ -23,6 +27,8 @@ public:
 	int readFile(std::string fileName);
 	int getChar();
 	std::string& currentLine();
+	int getRow();
+	int getCol();
 };
 
 

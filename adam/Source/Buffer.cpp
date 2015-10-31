@@ -15,6 +15,9 @@ using namespace std;
 Buffer::Buffer (string buffName) {
 	pos = Position(0, 0);
 	name = buffName;
+	maxLine = -1;
+	topLine = 0;
+	curLine = 0;
 }
 
 int Buffer::readFile(string fileName) {
@@ -26,13 +29,12 @@ int Buffer::readFile(string fileName) {
 	if (!inf) {
 		// throw error
 	}
-	int cnt = 0;
 	string line;
 	while (getline(inf, line)) {
 		data.push_back(line);
-		cnt++;
+		maxLine++;
 	}
-	return cnt;
+	return maxLine + 1;
 }
 
 string& Buffer::currentLine() {
@@ -40,6 +42,16 @@ string& Buffer::currentLine() {
 }
 
 int Buffer::getChar() {
-
+  return 0;
 }
+
+int Buffer::getRow() {
+	return pos.getRow();
+}
+
+int Buffer::getCol() {
+	return pos.getCol();
+}
+
+
 
