@@ -15,11 +15,9 @@ class Tty {
   int msgRow;
   int cmdRow;
   int maxRow;
-  std::ofstream deb {"tty.log"};
 public:
   Tty();
   ~Tty();
-  void init();
   int getHeight();
   int getWidth();
   void putChar(int x);

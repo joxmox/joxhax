@@ -9,7 +9,7 @@
 
 #include "Position.hpp"
 
-Screen::Screen(Tty tty, int top, int bot) {
+Screen::Screen(Tty* tty, int top, int bot) {
   this->tty = tty;
   this->top = top;
   this->bot = bot;
