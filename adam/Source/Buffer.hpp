@@ -29,6 +29,8 @@ public:
 	std::string& currentLine();
 	int getRow();
 	int getCol();
+	int getTopLine();
+	int getMaxLine();
 };
 
 

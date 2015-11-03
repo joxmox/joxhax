@@ -16,9 +16,9 @@ class Screen {
 	int col;
 	int top;
 	int bot;
-	Tty tty;
+	Tty *tty;
 public:
-	Screen(Tty tty, int top, int bot);
+	Screen(Tty* tty, int top, int bot);
 	int getRow();
 	int getCol();
 	void move();

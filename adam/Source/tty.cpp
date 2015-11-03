@@ -1,28 +1,20 @@
 #include <ncurses.h>
 #include <string>
 #include "tty.hpp"
+#include "debug.hpp"
 #include <map>
 
 using namespace std;
 
-Tty::Tty() {
-    deb << "constructor" << endl;
-}
 
-void Tty::init() {
-	  deb << "initializeing..." << endl;
+Tty::Tty() {
+	  deb("initializing");
 	  int sts;
 	  WINDOW *iscr = NULL;
 
 	  iscr = initscr();
-	  if (iscr == NULL) {
-	    deb << "initscr: failed" << endl;
-	  } else {
-	    deb << "initscr: success" << endl;
-	  }
 
 	  sts = start_color();
-	  deb << "start_color: " << sts << endl;
 
 	  sts = getmaxyx(stdscr, this->height, this->width);
 
@@ -99,7 +91,7 @@ void Tty::move(int r, int c) {
 }
 
 void Tty::refresh() {
-  deb << "refreshed" << endl;
+  deb("refreshing");
   wrefresh(stdscr);
 }
 
@@ -110,7 +102,6 @@ int Tty::getKey() {
 int Tty::mvGetKey(int r, int c) {
   int x;
   x = mvgetch(r, c);
-  deb << "mwgetch c: " << x << endl;
   return x;
 }
 

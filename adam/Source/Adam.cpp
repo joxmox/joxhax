@@ -5,6 +5,7 @@
  *      Author: sebis
  */
 
+#include <debug.hpp>
 #include <string>
 #include "tty.hpp"
 #include "Buffer.hpp"
@@ -25,6 +26,7 @@ Screen *scr;
 
 bool dispatchKey(int key) {
 	bool sts = true;
+	if (key == 26) sts = false;
 //	deb("key=" << key << ", Esc=" << escapeActive);
 	//if (escapeActive) key = processEscape();
 	/*
@@ -52,7 +54,27 @@ bool dispatchKey(int key) {
   return sts;
 }
 
+void displayBuffer(Buffer* buf) {
+    int r = 0;
+    int f = buf->getTopLine();
+    for (f=buf->getTopLine(); f<=buf->getMaxLine(), r<=maxRow; r++, f++) {
+        tty->move(r, 0);
+        tty->print(fData[f], -1);
+        tty->clearToEol();
+    }
+    if (r <= maxRow) {
+    	deb("printing EOF marker at line ");
+    	tty->move(r++, 0);
+    	tty->print("[End of file]", -1);
+    }
+    while (r <= maxRow) {
+    	tty->move(r++, 0);
+    	tty->clearToEol();
+    }
+}
+
 int main(int argc, char* argv[]) {
+	debInit();
     if (argc != 2) {
     	cout << "?Invalid number of parameters" << endl;
     	return 1;
@@ -64,18 +86,25 @@ int main(int argc, char* argv[]) {
 		return 1;
     }
 	tty = new Tty;
-//	scr = new Screen;
+	deb("tty created");
+//	scr = new Screen(tty);
 	buffer = new Buffer(fileName);
 	bufferVec.push_back(buffer);
 	bufferMap[fileName] = buffer;
+	deb("buffer " + fileName + " created");
 	int readLines = buffer->readFile(fileName);
+	deb(to_string(readLines) + " lines read");
 //	scr->displayBuffer(buffer);
+	displayBuffer(buffer);
 
-	tty->putMessage(readLines + " lines read from " + fileName);
+	tty->putMessage(to_string(readLines) + " lines read from " + fileName);
 	int dispatchLoop = true;
 	while (dispatchLoop) {
 		dispatchLoop = dispatchKey(tty->getKey());
 	}
+	deb("delete tty");
+	delete(tty);
+	deb("exiting");
 }
 
 
