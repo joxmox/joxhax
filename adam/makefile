@@ -14,7 +14,7 @@ compile = mkdir -p $(obj) && $(cpp) $(cf) $< -o $@
 link    = mkdir -p $(bin) && $(lnk) $(lf) $+ -o $@ $(lib)
 
 
-all : adam eve eve2
+all : adam
 
 eve : $(bin)eve
 
@@ -22,10 +22,13 @@ eve2 : $(bin)eve2
 
 adam : $(bin)adam
 
-$(bin)adam : $(obj)Adam.o $(obj)Buffer.o $(obj)Position.o $(obj)tty.o $(obj)Screen.o $(obj)debug.o
+$(bin)adam : $(obj)Adam.o $(obj)Buffer.o $(obj)Position.o $(obj)tty.o $(obj)Screen.o $(obj)debug.o $(obj)Size.o
 	$(link)
 	
 $(obj)main.o : $(src)main.cpp $(src)Adam.hpp
+	$(compile)
+	
+$(obj)Size.o : $(src)Size.cpp $(src)Size.hpp
 	$(compile)
 	
 $(obj)debug.o : $(src)debug.cpp $(src)debug.hpp

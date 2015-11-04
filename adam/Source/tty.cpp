@@ -2,17 +2,22 @@
 #include <string>
 #include "tty.hpp"
 #include "debug.hpp"
+#include "Size.hpp"
 #include <map>
+#include <csignal>
+#include <sys/ioctl.h>
+#include <cstdlib>
+#include <cstring>
 
 using namespace std;
 
 
 Tty::Tty() {
 	  deb("initializing");
+	  initscr();
 	  int sts;
-	  WINDOW *iscr = NULL;
 
-	  iscr = initscr();
+	  scr = nullptr;
 
 	  sts = start_color();
 
@@ -31,10 +36,63 @@ Tty::Tty() {
 
 	  this->row = 0;
 	  this->col = 0;
+
+//	  struct sigaction sa;
+//	  memset(&sa, 0, sizeof(struct sigaction));
+//	  sa.sa_handler = reinterpret_cast<__sighandler_t>(&Tty::handleResize);
+//	  sigaction(SIGWINCH, &sa, NULL);
+//	  signal(SIGWINCH, reinterpret_cast<__sighandler_t>(&Tty::handleResize));
 }
 
 Tty::~Tty() {
   endwin();
+}
+
+void Tty::handleResize() {
+	deb("resize detected!");
+	endwin();
+	clear();
+	deb("all done - truying to repaint window");
+//	  initscr();
+	  deb("a");
+	  int sts;
+	//  sts = start_color();
+	  deb("b");
+	  deb(to_string(COLS));
+	  deb(to_string(LINES));
+	  sts = getmaxyx(stdscr, this->height, this->width);
+	  deb("c");
+	  deb(to_string(height));
+	  deb(to_string(width));
+
+	  //sts = raw();
+//	  sts = meta(NULL, true);
+	//  sts = nonl();
+	  //sts = keypad(stdscr, true);
+	//  sts = noecho();
+
+	  msgRow = height - 1;
+	  cmdRow = height - 2;
+	  stsRow = height - 3;
+	  maxRow = height - 4;
+
+	  this->row = 0;
+	  this->col = 0;
+	  deb("y1");
+	  Size newSize = {height, width};
+	if (scr != nullptr) {
+		scr->setSize(newSize);
+		scr->displayBuffer();
+	}
+}
+
+void Tty::setScreen(Screen* s) {
+	scr = s;
+	deb("scr set to " + to_string((long long) scr));
+}
+
+Screen* Tty::getScreen() {
+	return scr;
 }
 
 int Tty::getHeight() {
@@ -51,7 +109,8 @@ void Tty::mvPrint(int r, int c, string s) {
 }
 
 void Tty::print(string s,int n) {
-  waddnstr(stdscr, s.c_str(), n);
+  int sts = waddnstr(stdscr, s.c_str(), n);
+  if (sts == ERR) deb("error printing")
 }
 
 void Tty::reverseOn() {
@@ -87,7 +146,8 @@ void Tty::normalN(int n) {
 }
 
 void Tty::move(int r, int c) {
-  wmove(stdscr, r, c);
+  int sts = wmove(stdscr, r, c);
+  if (sts == ERR) deb("error moving");
 }
 
 void Tty::refresh() {
@@ -173,4 +233,7 @@ string Tty::readCmd() {
 	return buff;
 }
 
+Size Tty::getSize() {
+	return Size(height - 1, width - 1);
+}
 

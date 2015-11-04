@@ -31,6 +31,7 @@ public:
 	int getCol();
 	int getTopLine();
 	int getMaxLine();
+	std::string getLine(int);
 };
 
 

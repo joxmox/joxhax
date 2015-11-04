@@ -5,6 +5,10 @@
 #include <ncurses.h>
 #include <string>
 #include <fstream>
+#include "Size.hpp"
+#include "Screen.hpp"
+
+class Screen;
 
 class Tty {
   int height;
@@ -15,6 +19,7 @@ class Tty {
   int msgRow;
   int cmdRow;
   int maxRow;
+  Screen* scr;
 public:
   Tty();
   ~Tty();
@@ -45,6 +50,10 @@ public:
   void normalEOL();
   void normalN(int n);
   std::string readCmd();
+  Size getSize();
+  void handleResize();
+  void setScreen(Screen*);
+  Screen* getScreen();
 };
 
 #endif

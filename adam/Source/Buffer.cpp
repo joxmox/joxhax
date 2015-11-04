@@ -53,5 +53,15 @@ int Buffer::getCol() {
 	return pos.getCol();
 }
 
+int Buffer::getTopLine() {
+	return 0;
+}
 
+int Buffer::getMaxLine() {
+	return data.size();
+}
+
+string Buffer::getLine(int i) {
+	return data[i];
+}
 

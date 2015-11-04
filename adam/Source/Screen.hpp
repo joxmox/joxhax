@@ -10,19 +10,22 @@
 
 #include "Position.hpp"
 #include "tty.hpp"
+#include "Buffer.hpp"
+#include "Size.hpp"
+
+class Tty;
 
 class Screen {
-	int row;
-	int col;
-	int top;
-	int bot;
-	Tty *tty;
+	Size siz;
+	Tty* tty;
+	Buffer* buf;
 public:
-	Screen(Tty* tty, int top, int bot);
-	int getRow();
-	int getCol();
-	void move();
+	Screen(Tty* tty, Size& s);
+	Screen(Tty* tty, Size& s, Buffer* buf);
 	bool inView(Position bPos);
+	void setBuffer(Buffer*);
+	void displayBuffer();
+	void setSize(Size& s);
 };
 
 

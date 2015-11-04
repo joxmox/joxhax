@@ -10,6 +10,7 @@
 #include "tty.hpp"
 #include "Buffer.hpp"
 #include "Position.hpp"
+#include "Size.hpp"
 #include "Screen.hpp"
 #include <iostream>
 #include <vector>
@@ -17,16 +18,19 @@
 
 using namespace std;
 
-vector<Buffer *> bufferVec;
-unordered_map<string, Buffer *> bufferMap;
-Buffer *buffer;
-Tty *tty;
+Buffer* buffer;
+vector<Buffer*> bufferVec;
+unordered_map<string, Buffer*> bufferMap;
+Tty* tty;
 int key;
-Screen *scr;
+Screen* scr;
+unordered_map<string, Screen*> scrMap;
 
 bool dispatchKey(int key) {
+	deb ("key = " + to_string(key));
 	bool sts = true;
 	if (key == 26) sts = false;
+	if (key == 410) tty->handleResize();
 //	deb("key=" << key << ", Esc=" << escapeActive);
 	//if (escapeActive) key = processEscape();
 	/*
@@ -54,10 +58,11 @@ bool dispatchKey(int key) {
   return sts;
 }
 
+/*
 void displayBuffer(Buffer* buf) {
     int r = 0;
     int f = buf->getTopLine();
-    for (f=buf->getTopLine(); f<=buf->getMaxLine(), r<=maxRow; r++, f++) {
+    for (f=buf->getTopLine(); f<=buf->getMaxLine(), r<=buffer->screen->getHeight; r++, f++) {
         tty->move(r, 0);
         tty->print(fData[f], -1);
         tty->clearToEol();
@@ -72,6 +77,7 @@ void displayBuffer(Buffer* buf) {
     	tty->clearToEol();
     }
 }
+*/
 
 int main(int argc, char* argv[]) {
 	debInit();
@@ -86,16 +92,33 @@ int main(int argc, char* argv[]) {
 		return 1;
     }
 	tty = new Tty;
-	deb("tty created");
-//	scr = new Screen(tty);
+	Size fullSize = tty->getSize();
+	deb("tty created: " + to_string(fullSize.getHeight()) + "x" + to_string(fullSize.getWidth()));
+
+	Size upperHalf = fullSize.splitU();
+	Size lowerHalf = fullSize.splitL();
+	scr = new Screen(tty, fullSize);
+	deb("default full screen created: " + to_string((long long) scr));
+	tty->setScreen(scr);
+	scrMap["default"] = scr;
+	scrMap["upper"] = new Screen(tty, upperHalf);
+	scrMap["lower"] = new Screen(tty, lowerHalf);
+	deb("created other screens");
+
 	buffer = new Buffer(fileName);
 	bufferVec.push_back(buffer);
 	bufferMap[fileName] = buffer;
 	deb("buffer " + fileName + " created");
+	scr->setBuffer(buffer);
+	deb("default screen linked to buffer");
+
 	int readLines = buffer->readFile(fileName);
 	deb(to_string(readLines) + " lines read");
-//	scr->displayBuffer(buffer);
-	displayBuffer(buffer);
+	scr->displayBuffer();
+//	tty->handleResize();
+//	displayBuffer(buffer);
+	deb("buffer contents displayed");
+	scr->displayBuffer();
 
 	tty->putMessage(to_string(readLines) + " lines read from " + fileName);
 	int dispatchLoop = true;
