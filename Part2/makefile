@@ -22,9 +22,35 @@ upg1 : $(bin)upg1
 	
 upg2 : $(bin)upg2
 	$(run)
+	
+Acctest : $(bin)Acctest
+	$(run)
+	
+Exchange : $(bin)Exchange
+	$(run)
+	
+ShapeTest : $(bin)ShapeTest
 
 clean :
 	rm -rf build
+	
+$(bin)ShapeTest : $(obj)ShapeTest.o
+	$(link)
+
+$(obj)ShapeTest.o : $(app)ShapeTest.cpp $(lib)Shapes.hpp
+	$(compile)
+	
+$(bin)Exchange : $(obj)Exchange.o
+	$(link)
+	
+$(obj)Exchange.o : $(app)Exchange.cpp $(lib)Currency.hpp $(lib)Money.hpp
+	$(compile)
+	
+$(bin)Acctest : $(obj)Acctest.o
+	$(link)
+
+$(obj)Acctest.o : $(app)Acctest.cpp $(lib)Acc.hpp
+	$(compile)
 
 $(bin)upg1 : $(obj)upg1.o
 	$(link)

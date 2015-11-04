@@ -32,7 +32,7 @@ int main() {
     a0.addBal(-3200);
     check();
     cout << "now calling apa" << endl;
-    apa(accVec[1]);
+ //   cout << s3.pop() << endl; apa(accVec[1]);
     cout << "back from apa" << endl;
     check();
     accVec[0].setBal(20000);
