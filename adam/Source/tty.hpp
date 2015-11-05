@@ -19,6 +19,10 @@ class Tty {
   int msgRow;
   int cmdRow;
   int maxRow;
+  Size ttySize;
+  Size screenSize;
+  Position msgPos;
+  Position cmdPos;
   Screen* scr;
 public:
   Tty();
@@ -50,7 +54,8 @@ public:
   void normalEOL();
   void normalN(int n);
   std::string readCmd();
-  Size getSize();
+  Size getTtySize();
+  Size getScreenSize();
   void handleResize();
   void setScreen(Screen*);
   Screen* getScreen();

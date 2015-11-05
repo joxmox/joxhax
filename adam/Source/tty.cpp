@@ -2,6 +2,7 @@
 #include <string>
 #include "tty.hpp"
 #include "debug.hpp"
+#include "Position.hpp"
 #include "Size.hpp"
 #include <map>
 #include <csignal>
@@ -33,6 +34,15 @@ Tty::Tty() {
 	  cmdRow = height - 2;
 	  stsRow = height - 3;
 	  maxRow = height - 4;
+	  //The stuff above is old. Further stsROw should be in Screen
+
+	  ttySize = {height - 1, width - 1};
+
+	  msgPos = {height - 1};
+	  cmdPos = {height - 2};
+
+	  screenSize = {height - 3, width - 1};
+
 
 	  this->row = 0;
 	  this->col = 0;
@@ -79,9 +89,9 @@ void Tty::handleResize() {
 	  this->row = 0;
 	  this->col = 0;
 	  deb("y1");
-	  Size newSize = {height, width};
+	  screenSize.setSize({height, width});
 	if (scr != nullptr) {
-		scr->setSize(newSize);
+		scr->setSize(screenSize);
 		scr->displayBuffer();
 	}
 }
@@ -110,7 +120,7 @@ void Tty::mvPrint(int r, int c, string s) {
 
 void Tty::print(string s,int n) {
   int sts = waddnstr(stdscr, s.c_str(), n);
-  if (sts == ERR) deb("error printing")
+  if (sts == ERR) deb("error printing");
 }
 
 void Tty::reverseOn() {
@@ -233,7 +243,11 @@ string Tty::readCmd() {
 	return buff;
 }
 
-Size Tty::getSize() {
-	return Size(height - 1, width - 1);
+Size Tty::getTtySize() {
+	return ttySize;
+}
+
+Size Tty::getScreenSize() {
+	return screenSize;
 }
 

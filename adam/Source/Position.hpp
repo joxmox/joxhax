@@ -12,8 +12,7 @@ class Position {
 	int row;
 	int col;
 public:
-	Position();
-	Position(int row, int col);
+	Position(int row = 0, int col = 0);
 	int getCol();
 	int getRow();
 	bool onScreen();

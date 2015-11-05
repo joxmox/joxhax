@@ -7,15 +7,7 @@
 
 #include "Position.hpp"
 
-Position::Position() {
-	this->row = 0;
-	this->col = 0;
-}
-
-Position::Position(int row, int col) {
-	this->row = row;
-	this->col = col;
-}
+Position::Position(int row, int col): row(row), col(col) {};
 
 int Position::getCol() {
 	return this->col;

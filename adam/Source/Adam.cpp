@@ -30,6 +30,7 @@ bool dispatchKey(int key) {
 	deb ("key = " + to_string(key));
 	bool sts = true;
 	if (key == 26) sts = false;
+	if (key == 407) sts = false;
 	if (key == 410) tty->handleResize();
 //	deb("key=" << key << ", Esc=" << escapeActive);
 	//if (escapeActive) key = processEscape();
@@ -58,26 +59,6 @@ bool dispatchKey(int key) {
   return sts;
 }
 
-/*
-void displayBuffer(Buffer* buf) {
-    int r = 0;
-    int f = buf->getTopLine();
-    for (f=buf->getTopLine(); f<=buf->getMaxLine(), r<=buffer->screen->getHeight; r++, f++) {
-        tty->move(r, 0);
-        tty->print(fData[f], -1);
-        tty->clearToEol();
-    }
-    if (r <= maxRow) {
-    	deb("printing EOF marker at line ");
-    	tty->move(r++, 0);
-    	tty->print("[End of file]", -1);
-    }
-    while (r <= maxRow) {
-    	tty->move(r++, 0);
-    	tty->clearToEol();
-    }
-}
-*/
 
 int main(int argc, char* argv[]) {
 	debInit();
@@ -92,17 +73,15 @@ int main(int argc, char* argv[]) {
 		return 1;
     }
 	tty = new Tty;
-	Size fullSize = tty->getSize();
+	Size fullSize = tty->getTtySize();
 	deb("tty created: " + to_string(fullSize.getHeight()) + "x" + to_string(fullSize.getWidth()));
 
-	Size upperHalf = fullSize.splitU();
-	Size lowerHalf = fullSize.splitL();
-	scr = new Screen(tty, fullSize);
+	scr = new Screen(tty, Screen::full);
 	deb("default full screen created: " + to_string((long long) scr));
 	tty->setScreen(scr);
 	scrMap["default"] = scr;
-	scrMap["upper"] = new Screen(tty, upperHalf);
-	scrMap["lower"] = new Screen(tty, lowerHalf);
+//	scrMap["upper"] = new Screen(tty, upperHalf);
+//	scrMap["lower"] = new Screen(tty, lowerHalf);
 	deb("created other screens");
 
 	buffer = new Buffer(fileName);
@@ -115,10 +94,7 @@ int main(int argc, char* argv[]) {
 	int readLines = buffer->readFile(fileName);
 	deb(to_string(readLines) + " lines read");
 	scr->displayBuffer();
-//	tty->handleResize();
-//	displayBuffer(buffer);
 	deb("buffer contents displayed");
-	scr->displayBuffer();
 
 	tty->putMessage(to_string(readLines) + " lines read from " + fileName);
 	int dispatchLoop = true;

@@ -16,16 +16,22 @@
 class Tty;
 
 class Screen {
-	Size siz;
+public:
+	enum scrMode {full, upper, lower};
+private:
 	Tty* tty;
 	Buffer* buf;
+	scrMode mode;
+	Size siz;
 public:
-	Screen(Tty* tty, Size& s);
-	Screen(Tty* tty, Size& s, Buffer* buf);
-	bool inView(Position bPos);
+	Screen(Tty* tty, scrMode mode = full);
+	Screen(Tty* tty, Buffer* buf, scrMode mode = full);
+	bool inView(Position& bPos);
 	void setBuffer(Buffer*);
 	void displayBuffer();
+	Size& getSize();
 	void setSize(Size& s);
+	void initScreen();
 };
 
 

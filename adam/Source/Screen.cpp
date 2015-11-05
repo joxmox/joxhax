@@ -12,10 +12,21 @@
 
 using namespace std;
 
-Screen::Screen(Tty* tty, Size& siz, Buffer* buf) : siz(siz), tty(tty), buf(buf) {}
-Screen::Screen(Tty* tty, Size& siz) : siz(siz), tty(tty), buf(nullptr) {}
+void Screen::initScreen() {
+	if (mode == full) {
+	  siz.setSize(tty->getScreenSize());
+	}
+}
 
-bool Screen::inView(Position bPos) {
+Screen::Screen(Tty* tty,Buffer* buf, scrMode mode) : tty(tty), buf(buf), mode(mode) {
+	initScreen();
+}
+
+Screen::Screen(Tty* tty, scrMode mode) : tty(tty), buf(nullptr), mode(mode) {
+	initScreen();
+}
+
+bool Screen::inView(Position& bPos) {
 	return false;
 }
 
@@ -50,3 +61,6 @@ void Screen::displayBuffer() {
     }
     deb("leaving");
 }
+
+
+

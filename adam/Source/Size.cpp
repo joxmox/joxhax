@@ -8,10 +8,9 @@
 #include "Size.hpp"
 #include "Position.hpp"
 
-Size::Size(const Position& a, const Position& b) {
-    start = a;
-    end = b;
-}
+Size::Size(): start({0,0}), end({0,0}) {}
+
+Size::Size(const Position& a, const Position& b): start(a), end(b) {}
 
 Size::Size(int r1, int c1, int r2, int c2) {
 	start = Position {r1, c1};
@@ -55,6 +54,14 @@ Size const Size::splitL() {
 	return Size((r2-r1+1)/2, c1, end);
 }
 
+Position Size::getStart() {
+	return start;
+}
+
+Position Size::getEnd() {
+	return end;
+}
+
 int const Size::getStartRow() {
 	return start.getRow();
 }
@@ -70,3 +77,23 @@ int const Size::getEndRow() {
 int const Size::getEndCol() {
 	return end.getCol();
 }
+
+Size& Size::operator -(Position& p) {
+	int pr = p.getRow();
+	int pc = p.getCol();
+	int sr = this->getStartRow();
+	int en = this->getEndRow();
+	int sc = this->getStartCol();
+	int ec = this->getEndCol();
+	if (pr == sr) {
+		this->start++;
+	}
+}
+
+void Size::setSize(Size s) {
+	start = s.getStart();
+	end = s.getEnd();
+}
+
+
+
