@@ -10,7 +10,9 @@
 
 #ifdef DBG
 #include <string>
+#include <sstream>
 void dbgInit(const std::string s);
+void dbg2()
 void dbg(const std::string a, const std::string b, const std::string s);
 #define debInit() dbgInit(__FUNCTION__);
 #define deb(x) dbg(__FILE__, __FUNCTION__, x);
@@ -19,3 +21,10 @@ void dbg(const std::string a, const std::string b, const std::string s);
 #endif
 
 #endif /* DEBUG_HPP_ */
+
+void dbg8(std::stringstream s) {
+
+}
+
+dbg8("kalle" << "sune");
+

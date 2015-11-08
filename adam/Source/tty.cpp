@@ -16,19 +16,16 @@ using namespace std;
 Tty::Tty() {
 	  deb("initializing");
 	  initscr();
-	  int sts;
 
 	  scr = nullptr;
 
-	  sts = start_color();
+	  getmaxyx(stdscr, this->height, this->width);
 
-	  sts = getmaxyx(stdscr, this->height, this->width);
-
-	  sts = raw();
-	  sts = meta(NULL, true);
-	  sts = nonl();
-	  sts = keypad(stdscr, true);
-	  sts = noecho();
+	  raw();
+	  meta(NULL, true);
+	  nonl();
+	  keypad(stdscr, true);
+	  noecho();
 
 	  msgRow = height - 1;
 	  cmdRow = height - 2;
@@ -43,15 +40,9 @@ Tty::Tty() {
 
 	  screenSize = {height - 3, width - 1};
 
-
 	  this->row = 0;
 	  this->col = 0;
 
-//	  struct sigaction sa;
-//	  memset(&sa, 0, sizeof(struct sigaction));
-//	  sa.sa_handler = reinterpret_cast<__sighandler_t>(&Tty::handleResize);
-//	  sigaction(SIGWINCH, &sa, NULL);
-//	  signal(SIGWINCH, reinterpret_cast<__sighandler_t>(&Tty::handleResize));
 }
 
 Tty::~Tty() {
@@ -62,38 +53,25 @@ void Tty::handleResize() {
 	deb("resize detected!");
 	endwin();
 	clear();
-	deb("all done - truying to repaint window");
-//	  initscr();
-	  deb("a");
-	  int sts;
-	//  sts = start_color();
-	  deb("b");
-	  deb(to_string(COLS));
-	  deb(to_string(LINES));
-	  sts = getmaxyx(stdscr, this->height, this->width);
-	  deb("c");
-	  deb(to_string(height));
-	  deb(to_string(width));
 
-	  //sts = raw();
-//	  sts = meta(NULL, true);
-	//  sts = nonl();
-	  //sts = keypad(stdscr, true);
-	//  sts = noecho();
+	getmaxyx(stdscr, this->height, this->width);
 
-	  msgRow = height - 1;
-	  cmdRow = height - 2;
-	  stsRow = height - 3;
-	  maxRow = height - 4;
+	msgRow = height - 1;
+	cmdRow = height - 2;
+	stsRow = height - 3;
+	maxRow = height - 4;
 
-	  this->row = 0;
-	  this->col = 0;
-	  deb("y1");
-	  screenSize.setSize({height, width});
-	if (scr != nullptr) {
-		scr->setSize(screenSize);
-		scr->displayBuffer();
-	}
+	//The stuff above is old. Further stsROw should be in Screen
+
+	ttySize = {height - 1, width - 1};
+
+	msgPos = {height - 1};
+	cmdPos = {height - 2};
+
+	screenSize = {height - 3, width - 1};
+	scr->initScreen();
+
+	scr->displayBuffer();
 }
 
 void Tty::setScreen(Screen* s) {
@@ -158,6 +136,10 @@ void Tty::normalN(int n) {
 void Tty::move(int r, int c) {
   int sts = wmove(stdscr, r, c);
   if (sts == ERR) deb("error moving");
+}
+
+void Tty::move(Position& p) {
+	wmove(stdscr, p.getRow(), p.getCol());
 }
 
 void Tty::refresh() {
@@ -248,6 +230,10 @@ Size Tty::getTtySize() {
 }
 
 Size Tty::getScreenSize() {
-	return screenSize;
+	return {height - 3, width - 1};
+}
+
+Position Tty::getStatPos() {
+	return {height - 3, 0};
 }
 

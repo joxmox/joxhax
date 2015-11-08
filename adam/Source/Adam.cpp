@@ -12,6 +12,7 @@
 #include "Position.hpp"
 #include "Size.hpp"
 #include "Screen.hpp"
+#include "ops.hpp"
 #include <iostream>
 #include <vector>
 #include <unordered_map>
@@ -26,10 +27,17 @@ int key;
 Screen* scr;
 unordered_map<string, Screen*> scrMap;
 
+
 bool dispatchKey(int key) {
 	deb ("key = " + to_string(key));
 	bool sts = true;
+	if (key == 4) buffer->dump();
 	if (key == 26) sts = false;
+	if (key >= 32 && key <= 127) scr->insertChar(key);
+//	if (key == 258) scr->moveDown();
+//	if (key == 259) scr->moveUp();
+	if (key == 260) scr->moveLeft();
+	if (key == 261) scr->moveRight();
 	if (key == 407) sts = false;
 	if (key == 410) tty->handleResize();
 //	deb("key=" << key << ", Esc=" << escapeActive);
@@ -54,7 +62,7 @@ bool dispatchKey(int key) {
 	if (key == 265) clearScreen();
 	if (key == 360) cmdSelect();
 	*/
-	tty->move(buffer->getRow(), buffer->getCol());
+    scr->position();
 	tty->refresh();
   return sts;
 }
@@ -98,6 +106,7 @@ int main(int argc, char* argv[]) {
 
 	tty->putMessage(to_string(readLines) + " lines read from " + fileName);
 	int dispatchLoop = true;
+	scr->position();
 	while (dispatchLoop) {
 		dispatchLoop = dispatchKey(tty->getKey());
 	}

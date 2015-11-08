@@ -5,8 +5,7 @@
  *      Author: joxmox
  */
 
-#ifndef SIZE_HPP_
-#define SIZE_HPP_
+#pragma once
 
 #include "Position.hpp"
 
@@ -35,4 +34,3 @@ public:
 
 };
 
-#endif /* SIZE_HPP_ */

@@ -6,8 +6,10 @@
  */
 
 #include <string>
+#include "debug.hpp"
 #include "Buffer.hpp"
 #include "Position.hpp"
+#include "ops.hpp"
 #include <iostream>
 
 using namespace std;
@@ -35,6 +37,10 @@ int Buffer::readFile(string fileName) {
 		maxLine++;
 	}
 	return maxLine + 1;
+}
+
+string Buffer::getFileName() {
+	return file;
 }
 
 string& Buffer::currentLine() {
@@ -65,3 +71,36 @@ string Buffer::getLine(int i) {
 	return data[i];
 }
 
+void Buffer::insertChar(int key) {
+	data[pos.getRow()].insert(pos.getCol(), string(1, key));
+	pos++;
+}
+
+void Buffer::moveLeft() {
+	if (pos.getCol() > 0) pos--;
+}
+
+void Buffer::moveRight() {
+	deb("Col: " + to_string(pos.getCol()))
+	if (pos.getCol() < data[pos.getRow()].length()) {
+		pos++;
+	}
+}
+
+int Buffer::getSelect() {
+	if (selectActive) {
+		if (pos < selectPos) {
+			return -1;
+		} else {
+			return 1;
+		}
+	} else {
+		return 0;
+	}
+}
+
+void Buffer::dump() {
+	for (auto x : data) {
+		deb(x);
+	}
+}

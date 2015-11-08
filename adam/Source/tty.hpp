@@ -1,12 +1,11 @@
-#ifndef TTY_HPP_
-#define TTY_HPP_
-
+#pragma once
 
 #include <ncurses.h>
 #include <string>
 #include <fstream>
 #include "Size.hpp"
 #include "Screen.hpp"
+#include "Position.hpp"
 
 class Screen;
 
@@ -33,9 +32,10 @@ public:
   void delChar();
   void delLine();
   std::string getLine(int l);
-  void print(std::string s, int n);
+  void print(std::string s, int n=-1);
   void mvPrint(int r, int c, std::string s);
   void move(int r, int c);
+  void move(Position& p);
   void refresh();
   int getKey();
   int mvGetKey(int r, int c);
@@ -59,6 +59,5 @@ public:
   void handleResize();
   void setScreen(Screen*);
   Screen* getScreen();
+  Position getStatPos();
 };
-
-#endif

@@ -5,24 +5,25 @@
  *      Author: joxmox
  */
 
-#ifndef POSITION_HPP_
-#define POSITION_HPP_
+#pragma once
+
+#include <iostream>
+#include <string>
 
 class Position {
 	int row;
 	int col;
 public:
 	Position(int row = 0, int col = 0);
-	int getCol();
-	int getRow();
-	bool onScreen();
+	int getCol() const;
+	int getRow() const;
+	bool onScreen() const;
 	void setPos(int row, int col);
 	void operator ++();
 	void operator ++(int) {++(*this);}
 	void operator --();
 	void operator --(int) {--(*this);}
+	std::string toString() const;
 };
 
-
-
-#endif /* POSITION_HPP_ */
+std::ostream& operator <<(std::ostream& os, const Position& p);

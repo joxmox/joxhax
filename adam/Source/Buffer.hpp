@@ -5,8 +5,7 @@
  *      Author: sebis
  */
 
-#ifndef BUFFER_HPP_
-#define BUFFER_HPP_
+#pragma once
 
 #include <vector>
 #include <fstream>
@@ -22,9 +21,12 @@ class Buffer {
 	std::string file;
 	std::string name;
 	std::vector<std::string> data;
+	bool selectActive = false;
+	Position selectPos = {0, 0};
 public:
 	Buffer(std::string buffName);
 	int readFile(std::string fileName);
+	std::string getFileName();
 	int getChar();
 	std::string& currentLine();
 	int getRow();
@@ -32,7 +34,12 @@ public:
 	int getTopLine();
 	int getMaxLine();
 	std::string getLine(int);
+	void insertChar(int key);
+	void moveLeft();
+	void moveRight();
+	void moveUp();
+	void moveDown();
+	int getSelect();
+	void dump();
 };
 
-
-#endif /* BUFFER_HPP_ */

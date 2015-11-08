@@ -22,7 +22,7 @@ eve2 : $(bin)eve2
 
 adam : $(bin)adam
 
-$(bin)adam : $(obj)Adam.o $(obj)Buffer.o $(obj)Position.o $(obj)tty.o $(obj)Screen.o $(obj)debug.o $(obj)Size.o
+$(bin)adam : $(obj)Adam.o $(obj)Buffer.o $(obj)Position.o $(obj)tty.o $(obj)Screen.o $(obj)debug.o $(obj)Size.o $(obj)ops.o
 	$(link)
 	
 $(obj)main.o : $(src)main.cpp $(src)Adam.hpp
@@ -34,7 +34,7 @@ $(obj)Size.o : $(src)Size.cpp $(src)Size.hpp
 $(obj)debug.o : $(src)debug.cpp $(src)debug.hpp
 	$(compile)
 	
-$(obj)Adam.o : $(src)Adam.cpp $(src)Adam.hpp $(src)tty.hpp $(src)Buffer.hpp $(src)Position.hpp $(src)Screen.hpp
+$(obj)Adam.o : $(src)Adam.cpp $(src)Adam.hpp $(src)tty.hpp $(src)Buffer.hpp $(src)Position.hpp $(src)Screen.hpp $(src)ops.hpp
 	$(compile)
 	
 $(obj)Buffer.o : $(src)Buffer.cpp $(src)Buffer.hpp $(src)Position.hpp $(src)tty.hpp
@@ -57,11 +57,14 @@ $(bin)eve : $(obj)eve.o $(obj)tty.o $(obj)parse.o
 
 $(bin)eve2 : $(obj)eve2.o $(obj)tty.o $(obj)parse.o
 	$(link)
-	
+
 $(obj)eve.o : $(src)eve.cpp $(src)tty.hpp
 	$(compile)	
 	
 $(obj)eve2.o : $(src)eve2.cpp $(src)tty.hpp
+	$(compile)
+	
+$(obj)ops.o : $(src)ops.cpp $(src)ops.hpp
 	$(compile)
 	
 clean :

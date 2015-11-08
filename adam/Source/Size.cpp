@@ -78,17 +78,11 @@ int const Size::getEndCol() {
 	return end.getCol();
 }
 
-Size& Size::operator -(Position& p) {
-	int pr = p.getRow();
-	int pc = p.getCol();
-	int sr = this->getStartRow();
-	int en = this->getEndRow();
-	int sc = this->getStartCol();
-	int ec = this->getEndCol();
-	if (pr == sr) {
-		this->start++;
-	}
-}
+//Size& Size::operator -(Position& p) {
+//	if (p.getRow() == this->getStartRow()) {
+//		this->start++;
+//	}
+//}
 
 void Size::setSize(Size s) {
 	start = s.getStart();

@@ -5,8 +5,7 @@
  *      Author: joxmox
  */
 
-#ifndef SCREEN_HPP_
-#define SCREEN_HPP_
+#pragma once
 
 #include "Position.hpp"
 #include "tty.hpp"
@@ -23,6 +22,8 @@ private:
 	Buffer* buf;
 	scrMode mode;
 	Size siz;
+	Position pos;
+	Position statusPos;
 public:
 	Screen(Tty* tty, scrMode mode = full);
 	Screen(Tty* tty, Buffer* buf, scrMode mode = full);
@@ -32,7 +33,12 @@ public:
 	Size& getSize();
 	void setSize(Size& s);
 	void initScreen();
+	void printStatus();
+	void insertChar(int key);
+	void position();
+	void moveRight();
+	void moveLeft();
+	void moveUp();
+	void moveDown();
 };
 
-
-#endif /* SCREEN_HPP_ */
