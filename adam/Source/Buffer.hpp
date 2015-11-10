@@ -29,11 +29,13 @@ public:
 	std::string getFileName();
 	int getChar();
 	std::string& currentLine();
+	Position& getPos();
 	int getRow();
 	int getCol();
 	int getTopLine();
 	int getMaxLine();
 	std::string getLine(int);
+	std::string getCurLine();
 	void insertChar(int key);
 	void moveLeft();
 	void moveRight();
@@ -41,5 +43,6 @@ public:
 	void moveDown();
 	int getSelect();
 	void dump();
+	void adjustRow(Position& p);
 };
 

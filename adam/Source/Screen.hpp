@@ -31,6 +31,7 @@ public:
 	void setBuffer(Buffer*);
 	void displayBuffer();
 	Size& getSize();
+	Position& getPos();
 	void setSize(Size& s);
 	void initScreen();
 	void printStatus();

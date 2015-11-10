@@ -7,6 +7,10 @@
 
 #include "Size.hpp"
 #include "Position.hpp"
+#include <string>
+#include <ostream>
+
+using namespace std;
 
 Size::Size(): start({0,0}), end({0,0}) {}
 
@@ -62,6 +66,14 @@ Position Size::getEnd() {
 	return end;
 }
 
+Position Size::getLowLeft() {
+	return {end.getRow(), start.getCol()};
+}
+
+Position Size::getUpRight() {
+	return {start.getRow(), end.getCol()};
+}
+
 int const Size::getStartRow() {
 	return start.getRow();
 }
@@ -89,5 +101,13 @@ void Size::setSize(Size s) {
 	end = s.getEnd();
 }
 
+
+string Size::toString() const {
+	return start.toString() + ":" + end.toString();
+}
+
+ostream& operator <<(ostream& os, const Size& s) {
+	return os << s.toString();
+}
 
 

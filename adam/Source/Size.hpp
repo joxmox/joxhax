@@ -21,6 +21,8 @@ public:
 	Size(const Position&, int, int);
 	Position getStart();
 	Position getEnd();
+	Position getLowLeft();
+	Position getUpRight();
 	int const getHeight();
 	int const getWidth();
 	int const getStartRow();
@@ -31,6 +33,7 @@ public:
 	Size const splitU();
 	Size const splitL();
 	Size& operator -(Position& p);
-
+	std::string toString() const;
 };
 
+std::ostream& operator <<(std::ostream& os, const Size& s);

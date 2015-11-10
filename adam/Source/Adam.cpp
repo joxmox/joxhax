@@ -5,7 +5,7 @@
  *      Author: sebis
  */
 
-#include <debug.hpp>
+#include <Debug.hpp>
 #include <string>
 #include "tty.hpp"
 #include "Buffer.hpp"
@@ -29,13 +29,13 @@ unordered_map<string, Screen*> scrMap;
 
 
 bool dispatchKey(int key) {
-	deb ("key = " + to_string(key));
+	DBG << "Key :" << key << endl;
 	bool sts = true;
 	if (key == 4) buffer->dump();
 	if (key == 26) sts = false;
 	if (key >= 32 && key <= 127) scr->insertChar(key);
-//	if (key == 258) scr->moveDown();
-//	if (key == 259) scr->moveUp();
+	if (key == 258) scr->moveDown();
+	if (key == 259) scr->moveUp();
 	if (key == 260) scr->moveLeft();
 	if (key == 261) scr->moveRight();
 	if (key == 407) sts = false;
@@ -69,7 +69,7 @@ bool dispatchKey(int key) {
 
 
 int main(int argc, char* argv[]) {
-	debInit();
+	DBGINI("adam.log");
     if (argc != 2) {
     	cout << "?Invalid number of parameters" << endl;
     	return 1;
@@ -82,37 +82,38 @@ int main(int argc, char* argv[]) {
     }
 	tty = new Tty;
 	Size fullSize = tty->getTtySize();
-	deb("tty created: " + to_string(fullSize.getHeight()) + "x" + to_string(fullSize.getWidth()));
+	DBG << "tty created: " << fullSize.getHeight() << "x" << fullSize.getWidth() << endl;
 
 	scr = new Screen(tty, Screen::full);
-	deb("default full screen created: " + to_string((long long) scr));
+	DBG << "default full screen created " << endl;
 	tty->setScreen(scr);
 	scrMap["default"] = scr;
 //	scrMap["upper"] = new Screen(tty, upperHalf);
 //	scrMap["lower"] = new Screen(tty, lowerHalf);
-	deb("created other screens");
+	DBG << "created other screens" << endl;
 
 	buffer = new Buffer(fileName);
 	bufferVec.push_back(buffer);
 	bufferMap[fileName] = buffer;
-	deb("buffer " + fileName + " created");
+	DBG << "buffer " << fileName << " created" << endl;
 	scr->setBuffer(buffer);
-	deb("default screen linked to buffer");
+	DBG << "default screen linked to buffer" << endl;
 
 	int readLines = buffer->readFile(fileName);
-	deb(to_string(readLines) + " lines read");
+	DBG << readLines << " lines read from " << fileName << endl;
 	scr->displayBuffer();
-	deb("buffer contents displayed");
+	DBG << "buffer contents displayed" << endl;
 
 	tty->putMessage(to_string(readLines) + " lines read from " + fileName);
 	int dispatchLoop = true;
 	scr->position();
 	while (dispatchLoop) {
+		DBG << "Buf: " << buffer->getPos() << " Scr: " << scr->getPos() << endl;
 		dispatchLoop = dispatchKey(tty->getKey());
 	}
-	deb("delete tty");
+	DBG << "deleting tty" << endl;
 	delete(tty);
-	deb("exiting");
+	DBG << "exiting" << endl;
 }
 
 

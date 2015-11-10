@@ -5,8 +5,8 @@
  *      Author: sebis
  */
 
+#include <Debug.hpp>
 #include <string>
-#include "debug.hpp"
 #include "Buffer.hpp"
 #include "Position.hpp"
 #include "ops.hpp"
@@ -59,6 +59,10 @@ int Buffer::getCol() {
 	return pos.getCol();
 }
 
+Position& Buffer::getPos() {
+	return pos;
+}
+
 int Buffer::getTopLine() {
 	return 0;
 }
@@ -68,7 +72,13 @@ int Buffer::getMaxLine() {
 }
 
 string Buffer::getLine(int i) {
-	return data[i];
+	if (i < data.size()) return data[i];
+	if (i > data.size()) return "";
+	return "[End of file]";
+}
+
+string Buffer::getCurLine() {
+	return getLine(pos.getRow());
 }
 
 void Buffer::insertChar(int key) {
@@ -81,10 +91,19 @@ void Buffer::moveLeft() {
 }
 
 void Buffer::moveRight() {
-	deb("Col: " + to_string(pos.getCol()))
+	DBG << "Col: " << pos.getCol() << endl;
+//	deb("Col: " + to_string(pos.getCol()))
 	if (pos.getCol() < data[pos.getRow()].length()) {
 		pos++;
 	}
+}
+
+void Buffer::moveUp() {
+	if (pos.getRow() > 0) pos.moveUp();
+}
+
+void Buffer::moveDown() {
+	pos.moveDown();
 }
 
 int Buffer::getSelect() {
@@ -101,6 +120,18 @@ int Buffer::getSelect() {
 
 void Buffer::dump() {
 	for (auto x : data) {
-		deb(x);
+		DBG << x << endl;
+	}
+}
+
+void Buffer::adjustRow(Position& p) {
+	DBG << p << " " << pos << endl;
+	int c = pos.setCol(p.getCol());
+	int r = pos.getRow();
+	int s = data[r].size();
+	if (c > s) {
+		DBG << "|" << data[r] << "|" << endl;
+		data[r] += string(c - s, ' ');
+		DBG << "|" << data[r] << "|" << endl;
 	}
 }

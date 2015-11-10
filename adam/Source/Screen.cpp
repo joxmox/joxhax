@@ -6,10 +6,10 @@
  */
 
 #include "Screen.hpp"
-#include "debug.hpp"
 #include "Position.hpp"
 #include "ops.hpp"
 #include <string>
+#include "Debug.hpp"
 
 using namespace std;
 
@@ -17,6 +17,7 @@ void Screen::initScreen() {
 	if (mode == full) {
 	  siz = tty->getScreenSize();
 	  statusPos = tty->getStatPos();
+	  DBG << "Screen initialized: " << siz << endl;
 	}
 }
 
@@ -36,33 +37,24 @@ void Screen::setBuffer(Buffer* b) {
 	buf = b;
 }
 
+Position& Screen::getPos() {
+	return pos;
+}
+
 void Screen::setSize(Size& s) {
 	siz = s;
 }
 
 void Screen::displayBuffer() {
-	deb("starting");
-    int r = siz.getStartRow();
-    int f = buf->getTopLine();
-    deb("maxLine: " + to_string(buf->getMaxLine()));
-    deb("endRow: " + to_string(siz.getEndRow()));
-    for (f=buf->getTopLine(); f<buf->getMaxLine() && r<=siz.getEndRow(); r++, f++) {
-        tty->move(r, 0);
-        tty->print(buf->getLine(f), -1);
+	DBG << "starting" << endl;
+    int f = buf->getRow();
+    for (Position p=siz.getStart(); p < siz; p.moveDown()) {
+        tty->move(p);
+        tty->print(buf->getLine(f++));
         tty->clearToEol();
     }
-    deb("rows done");
-    if (r <= siz.getEndRow()) {
-    	deb("printing EOF marker at line ");
-    	tty->move(r++, 0);
-    	tty->print("[End of file]", -1);
-    }
-    while (r <= siz.getEndRow()) {
-    	tty->move(r++, 0);
-    	tty->clearToEol();
-    }
     printStatus();
-    deb("leaving");
+    DBG << "leaving" << endl;;
 }
 
 void Screen::printStatus() {
@@ -74,6 +66,7 @@ void Screen::printStatus() {
 }
 
 void Screen::insertChar(int key) {
+	buf->adjustRow(pos);
 	buf->insertChar(key);
 	tty->putChar(key);
 	if (pos < siz) pos++;
@@ -102,6 +95,31 @@ void Screen::moveRight() {
 	}
 }
 
+void Screen::moveUp() {
+	if (buf->getRow() > 0) {
+		buf->moveUp();
+		if (pos.getRow() > 0) {
+			pos.moveUp();
+		} else {
+			tty->move(siz.getStart());
+			tty->insertLine();
+			tty->move(siz.getStart());
+			tty->print(buf->getCurLine());
+		}
+	}
+}
+
+void Screen::moveDown() {
+	buf->moveDown();
+	if (pos.getRow() < siz.getEnd().getRow()) {
+		pos.moveDown();
+	} else {
+		tty->move(0, 0);
+		tty->delLine();
+		tty->move(siz.getLowLeft());
+		tty->print(buf->getCurLine());
+	}
+}
 
 
 

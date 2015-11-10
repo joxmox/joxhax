@@ -1,7 +1,6 @@
 #include <ncurses.h>
 #include <string>
 #include "tty.hpp"
-#include "debug.hpp"
 #include "Position.hpp"
 #include "Size.hpp"
 #include <map>
@@ -9,12 +8,13 @@
 #include <sys/ioctl.h>
 #include <cstdlib>
 #include <cstring>
+#include "Debug.hpp"
 
 using namespace std;
 
 
 Tty::Tty() {
-	  deb("initializing");
+	  DBG << "Creating tty..." << endl;
 	  initscr();
 
 	  scr = nullptr;
@@ -38,7 +38,8 @@ Tty::Tty() {
 	  msgPos = {height - 1};
 	  cmdPos = {height - 2};
 
-	  screenSize = {height - 3, width - 1};
+	  screenSize = {height - 4, width - 1};
+	  DBG << screenSize << endl;
 
 	  this->row = 0;
 	  this->col = 0;
@@ -50,7 +51,7 @@ Tty::~Tty() {
 }
 
 void Tty::handleResize() {
-	deb("resize detected!");
+	DBG << "resize detected!" << endl;
 	endwin();
 	clear();
 
@@ -68,7 +69,7 @@ void Tty::handleResize() {
 	msgPos = {height - 1};
 	cmdPos = {height - 2};
 
-	screenSize = {height - 3, width - 1};
+	screenSize = {height - 4, width - 1};
 	scr->initScreen();
 
 	scr->displayBuffer();
@@ -76,7 +77,6 @@ void Tty::handleResize() {
 
 void Tty::setScreen(Screen* s) {
 	scr = s;
-	deb("scr set to " + to_string((long long) scr));
 }
 
 Screen* Tty::getScreen() {
@@ -98,7 +98,7 @@ void Tty::mvPrint(int r, int c, string s) {
 
 void Tty::print(string s,int n) {
   int sts = waddnstr(stdscr, s.c_str(), n);
-  if (sts == ERR) deb("error printing");
+  if (sts == ERR) DBG << "error printing" << endl;
 }
 
 void Tty::reverseOn() {
@@ -135,15 +135,15 @@ void Tty::normalN(int n) {
 
 void Tty::move(int r, int c) {
   int sts = wmove(stdscr, r, c);
-  if (sts == ERR) deb("error moving");
+  if (sts == ERR) DBG << "error moving" << endl;
 }
 
-void Tty::move(Position& p) {
+void Tty::move(Position p) {
 	wmove(stdscr, p.getRow(), p.getCol());
 }
 
 void Tty::refresh() {
-  deb("refreshing");
+  DBG << "refreshing" << endl;
   wrefresh(stdscr);
 }
 
@@ -230,7 +230,7 @@ Size Tty::getTtySize() {
 }
 
 Size Tty::getScreenSize() {
-	return {height - 3, width - 1};
+	return {height - 4, width - 1};
 }
 
 Position Tty::getStatPos() {

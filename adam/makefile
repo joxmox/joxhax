@@ -6,7 +6,7 @@ inc = -I$(src)
 
 cpp = g++ -c
 lnk = g++
-cf  = -std=c++14 -g -Wall -Wno-sign-compare -DDBG=1 -fmax-errors=1 $(inc)
+cf  = -std=c++14 -g -Wall -Wno-sign-compare -DDBGFLG=1 -fmax-errors=1 $(inc)
 lf  =
 lib = -lncurses
 
@@ -22,7 +22,7 @@ eve2 : $(bin)eve2
 
 adam : $(bin)adam
 
-$(bin)adam : $(obj)Adam.o $(obj)Buffer.o $(obj)Position.o $(obj)tty.o $(obj)Screen.o $(obj)debug.o $(obj)Size.o $(obj)ops.o
+$(bin)adam : $(obj)Adam.o $(obj)Buffer.o $(obj)Position.o $(obj)tty.o $(obj)Screen.o $(obj)Debug.o $(obj)Size.o $(obj)ops.o
 	$(link)
 	
 $(obj)main.o : $(src)main.cpp $(src)Adam.hpp
@@ -31,7 +31,7 @@ $(obj)main.o : $(src)main.cpp $(src)Adam.hpp
 $(obj)Size.o : $(src)Size.cpp $(src)Size.hpp
 	$(compile)
 	
-$(obj)debug.o : $(src)debug.cpp $(src)debug.hpp
+$(obj)Debug.o : $(src)Debug.cpp $(src)Debug.hpp
 	$(compile)
 	
 $(obj)Adam.o : $(src)Adam.cpp $(src)Adam.hpp $(src)tty.hpp $(src)Buffer.hpp $(src)Position.hpp $(src)Screen.hpp $(src)ops.hpp

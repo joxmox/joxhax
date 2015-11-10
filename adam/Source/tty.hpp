@@ -35,7 +35,7 @@ public:
   void print(std::string s, int n=-1);
   void mvPrint(int r, int c, std::string s);
   void move(int r, int c);
-  void move(Position& p);
+  void move(Position p);
   void refresh();
   int getKey();
   int mvGetKey(int r, int c);

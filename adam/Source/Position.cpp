@@ -21,6 +21,32 @@ int Position::getRow() const {
 	return this->row;
 }
 
+int Position::setCol(int c) {
+	col = c;
+	return c;
+}
+
+int Position::setRow(int r) {
+	row = r;
+	return r;
+}
+
+void Position::moveUp() {
+	row--;
+}
+
+void Position::moveDown() {
+	row++;
+}
+
+void Position::moveLeft() {
+	col--;
+}
+
+void Position::moveRight() {
+	col++;
+}
+
 bool Position::onScreen() const {
 	return true;
 }
