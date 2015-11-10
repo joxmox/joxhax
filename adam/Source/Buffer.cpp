@@ -77,8 +77,8 @@ string Buffer::getLine(int i) {
 	return "[End of file]";
 }
 
-string Buffer::getCurLine() {
-	return getLine(pos.getRow());
+string Buffer::getCurLine(int a) {
+	return getLine(pos.getRow() + a);
 }
 
 void Buffer::insertChar(int key) {
@@ -135,3 +135,16 @@ void Buffer::adjustRow(Position& p) {
 		DBG << "|" << data[r] << "|" << endl;
 	}
 }
+
+void Buffer::breakLine() {
+	string ss = data[pos.getRow()];
+	int len = ss.length();
+	int row = pos.getRow();
+	int col = pos.getCol();
+	string sr = ss.substr(col, len - col);
+	data[row] = ss.substr(0, col);
+	data.insert(data.begin() + row + 1, sr);
+	pos.moveDown();
+	pos.setCol(0);
+}
+

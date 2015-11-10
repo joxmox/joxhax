@@ -35,7 +35,7 @@ public:
 	int getTopLine();
 	int getMaxLine();
 	std::string getLine(int);
-	std::string getCurLine();
+	std::string getCurLine(int=0);
 	void insertChar(int key);
 	void moveLeft();
 	void moveRight();
@@ -44,5 +44,6 @@ public:
 	int getSelect();
 	void dump();
 	void adjustRow(Position& p);
+	void breakLine();
 };
 

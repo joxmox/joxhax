@@ -41,5 +41,7 @@ public:
 	void moveLeft();
 	void moveUp();
 	void moveDown();
+	void breakLine();
+	void deleteChar();
 };
 

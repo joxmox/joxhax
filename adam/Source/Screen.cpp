@@ -50,7 +50,7 @@ void Screen::displayBuffer() {
     int f = buf->getRow();
     for (Position p=siz.getStart(); p < siz; p.moveDown()) {
         tty->move(p);
-        tty->print(buf->getLine(f++));
+        tty->print(buf->getLine(f++), siz.getEndCol());
         tty->clearToEol();
     }
     printStatus();
@@ -121,7 +121,45 @@ void Screen::moveDown() {
 	}
 }
 
+void Screen::breakLine() {
+	buf->adjustRow(pos);
+	buf->breakLine();
+	pos.setCol(0);
+	tty->move(pos);
+	tty->print(buf->getCurLine(-1));
+	tty->clearToEol();
+	pos.moveDown();
+	tty->move(pos);
+	tty->insertLine();
+	tty->print(buf->getCurLine());
+}
 
 
+void Screen::deleteChar() {
+	buf->adjustRow(pos);
 
+}
 
+/*
+void Eve::deleteChar() {
+  adjustLength();
+  if (col > 0) {
+    tty.move(row, --col);
+    tty.delChar();
+    fData[firstLine].erase(col, 1);
+    tty.move(row, 0);
+  } else {
+    if (firstLine > 0) {
+      col = fData[firstLine-1].length();
+      string str = fData[firstLine];
+      tty.delLine();
+      tty.move(--row, col);
+      printStr(str);
+      fData[firstLine-1] += fData[firstLine];
+      fData.erase(fData.begin() + firstLine--);
+      --flines;
+    }
+  }
+}
+
+/*

@@ -32,6 +32,7 @@ bool dispatchKey(int key) {
 	DBG << "Key :" << key << endl;
 	bool sts = true;
 	if (key == 4) buffer->dump();
+	if (key == 13) scr->breakLine();
 	if (key == 26) sts = false;
 	if (key >= 32 && key <= 127) scr->insertChar(key);
 	if (key == 258) scr->moveDown();
@@ -45,19 +46,13 @@ bool dispatchKey(int key) {
 	/*
 	if (key == -1) saveExit();
 	if (key == 0) return true;
-	if (key == 4) debugDump();
 	if (key == 5) gotoEol();
 	if (key == 8) gotoSol();
-	if (key == 13) breakLine();
 	if (key == 23) refreshScreen();
 	if (key == 26) saveExit();
 	if (key == 27) escape_active = true;
 	if (key == 407) return false;
 	if (key >= 32 && key <= 127) insertChar();
-	if (key == 258) moveDown();
-	if (key == 259) moveUp();
-	if (key == 260) moveLeft();
-	if (key == 261) moveRight();
 	if (key == 263) deleteChar();
 	if (key == 265) clearScreen();
 	if (key == 360) cmdSelect();
