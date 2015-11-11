@@ -23,6 +23,7 @@ bool operator >(Position p, Size s) {
 	return !(p < s);
 }
 
+/*
 bool const operator ==(Position& p1, Position& p2) {
 	if (p1.getRow() == p2.getRow() && p1.getCol() == p2.getCol()) {
 		return true;
@@ -35,10 +36,12 @@ bool const operator !=(Position& p1, Position& p2) {
 	return !(p1 == p2);
 }
 
+*/
+
 bool const operator <(Position& p1, Position& p2) {
 	if (p1.getRow() < p2.getRow()) return true;
-	if (p2.getRow() > p2.getRow()) return false;
-	if (p1.getRow() < p2.getRow()) return true;
+	if (p1.getRow() > p2.getRow()) return false;
+	if (p1.getCol() < p2.getCol()) return true;
 	return false;
 }
 

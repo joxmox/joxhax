@@ -22,7 +22,7 @@ eve2 : $(bin)eve2
 
 adam : $(bin)adam
 
-$(bin)adam : $(obj)Adam.o $(obj)Buffer.o $(obj)Position.o $(obj)tty.o $(obj)Screen.o $(obj)Debug.o $(obj)Size.o $(obj)ops.o
+$(bin)adam : $(obj)Adam.o $(obj)Buffer.o $(obj)Position.o $(obj)tty.o $(obj)Screen.o $(obj)Debug.o $(obj)Size.o $(obj)ops.o $(obj)parse.o
 	$(link)
 	
 $(obj)main.o : $(src)main.cpp $(src)Adam.hpp

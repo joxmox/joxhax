@@ -71,10 +71,18 @@ int Buffer::getMaxLine() {
 	return data.size();
 }
 
+void Buffer::setPos(Position p) {
+	pos = p;
+}
+
 string Buffer::getLine(int i) {
 	if (i < data.size()) return data[i];
 	if (i > data.size()) return "";
 	return "[End of file]";
+}
+
+string Buffer::getLine(Position p) {
+	return getLine(p.getRow());
 }
 
 string Buffer::getCurLine(int a) {
@@ -93,9 +101,7 @@ void Buffer::moveLeft() {
 void Buffer::moveRight() {
 	DBG << "Col: " << pos.getCol() << endl;
 //	deb("Col: " + to_string(pos.getCol()))
-	if (pos.getCol() < data[pos.getRow()].length()) {
-		pos++;
-	}
+	pos++;
 }
 
 void Buffer::moveUp() {
@@ -125,15 +131,19 @@ void Buffer::dump() {
 }
 
 void Buffer::adjustRow(Position& p) {
-	DBG << p << " " << pos << endl;
-	int c = pos.setCol(p.getCol());
-	int r = pos.getRow();
-	int s = data[r].size();
-	if (c > s) {
-		DBG << "|" << data[r] << "|" << endl;
-		data[r] += string(c - s, ' ');
-		DBG << "|" << data[r] << "|" << endl;
+	DBG << pos.getRow() << ", " << data.size() << endl;
+	int apa = pos.getRow() - data.size() + 1;
+	if (apa > 0) data.insert(data.end(), apa, ""); //insert enough lines
+	DBG << apa << " lines added to buffer" << endl;
+	int bc = pos.setCol(p.getCol());						// then fix current line
+	int br = pos.getRow();
+	int ds = data[br].size();
+	if (bc > ds) {
+		DBG << "|" << data[br] << "|" << endl;
+		data[br] += string(bc - ds, ' ');
+		DBG << "|" << data[br] << "|" << endl;
 	}
+	DBG << "leaving" << endl;
 }
 
 void Buffer::breakLine() {
@@ -148,3 +158,53 @@ void Buffer::breakLine() {
 	pos.setCol(0);
 }
 
+void Buffer::delChar() {
+	pos--;
+	data[pos.getRow()].erase(pos.getCol(), 1);
+}
+
+int Buffer::joinLines() {
+	int col = getCurLine(-1).length();
+	string str = getCurLine();
+	int row = pos.getRow();
+	data[row - 1] += data[row];
+	data.erase(data.begin() + row);
+	pos.setPos(row - 1, col);
+	return col;
+}
+
+int Buffer::getDataSize() {
+	return data.size();
+}
+
+Position Buffer::getEndPos() {
+	int r = data.size();
+	int c = data[r].length();
+	return {r, c};
+}
+
+int Buffer::getEndLine() {
+	return data.size();
+}
+
+void Buffer::setMark(string mark) {
+	markMap[mark] = pos;
+}
+
+Position Buffer::getMark(string mark) {
+	if (markMap.find(mark) != markMap.end()) {
+		return markMap[mark];
+	} else {
+		return NOPOS;
+	}
+}
+
+void Buffer::recalcMarks(int x) {
+	for (auto& m : markMap) {
+		DBG << "found mark " << m.first << " at " << m.second << ", buf at " << pos << endl;
+		if (m.second >= pos) {
+			DBG << "adjusting " << x << endl;
+			m.second += {x, 0};
+		}
+	}
+}

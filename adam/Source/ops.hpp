@@ -15,8 +15,12 @@ bool operator <(Position p, Size s);
 bool operator >(Position p, Size s);
 
 
+/*
+ *
 bool const operator ==(Position& p1, Position& p2);
 bool const operator !=(Position& p1, Position& p2);
+*/
+
 bool const operator <(Position& p1, Position& p2);
 bool const operator <=(Position& p1, Position& p2);
 bool const operator >(Position& p1, Position& p2);

@@ -56,12 +56,52 @@ void Position::setPos(int r, int c) {
 	col = c;
 }
 
-void Position::operator ++() {
-	this->col++;
+bool Position::operator ==(Position p) {
+	return (this->row == p.row && this->col == p.row);
 }
 
-void Position::operator --() {
+bool Position::operator !=(Position p) {
+	return !(*this == p);
+}
+
+Position Position::operator ++() {
+	this->col++;
+	return *this;
+}
+
+Position Position::operator ++(int) {
+	Position tmp = *this;
+	this->col++;
+	return tmp;
+}
+
+Position Position::operator --() {
 	this->col--;
+	return *this;
+}
+
+Position Position::operator --(int) {
+	Position tmp = *this;
+	this->col--;
+	return tmp;
+}
+
+Position Position::operator +(Position p) {
+	return {this->row + p.row, this->col + p.col};
+}
+
+Position Position::operator -(Position p) {
+	return {this->row - p.row, this->col + p.col};
+}
+
+Position Position::operator +=(Position p) {
+	*this = *this + p;
+	return *this;
+}
+
+Position Position::operator -=(Position p) {
+	*this = *this - p;
+	return *this;
 }
 
 string Position::toString() const {

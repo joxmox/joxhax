@@ -9,6 +9,7 @@
 
 #include <vector>
 #include <fstream>
+#include <unordered_map>
 
 #include "Position.hpp"
 
@@ -23,6 +24,7 @@ class Buffer {
 	std::vector<std::string> data;
 	bool selectActive = false;
 	Position selectPos = {0, 0};
+	std::unordered_map<std::string, Position> markMap;
 public:
 	Buffer(std::string buffName);
 	int readFile(std::string fileName);
@@ -34,7 +36,11 @@ public:
 	int getCol();
 	int getTopLine();
 	int getMaxLine();
+	void setPos(Position);
+	Position getEndPos();
+	int getEndLine();
 	std::string getLine(int);
+	std::string getLine(Position);
 	std::string getCurLine(int=0);
 	void insertChar(int key);
 	void moveLeft();
@@ -45,5 +51,12 @@ public:
 	void dump();
 	void adjustRow(Position& p);
 	void breakLine();
+	void delChar();
+	int joinLines();
+	int getDataSize();
+	void setMark(std::string);
+	Position getMark(std::string);
+	void recalcMarks(int);
+
 };
 

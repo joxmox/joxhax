@@ -43,5 +43,12 @@ public:
 	void moveDown();
 	void breakLine();
 	void deleteChar();
+	void adjust();
+	void gotoPos(Position);
+	void readCommand();
+	void cmdMark(std::string);
+	void cmdLine(std::string);
+	void cmdGoto(std::string);
+
 };
 

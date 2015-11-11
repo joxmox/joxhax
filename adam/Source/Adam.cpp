@@ -38,7 +38,9 @@ bool dispatchKey(int key) {
 	if (key == 258) scr->moveDown();
 	if (key == 259) scr->moveUp();
 	if (key == 260) scr->moveLeft();
+	if (key == 263) scr->deleteChar();
 	if (key == 261) scr->moveRight();
+	if (key == 276) scr->readCommand();
 	if (key == 407) sts = false;
 	if (key == 410) tty->handleResize();
 //	deb("key=" << key << ", Esc=" << escapeActive);
@@ -53,7 +55,6 @@ bool dispatchKey(int key) {
 	if (key == 27) escape_active = true;
 	if (key == 407) return false;
 	if (key >= 32 && key <= 127) insertChar();
-	if (key == 263) deleteChar();
 	if (key == 265) clearScreen();
 	if (key == 360) cmdSelect();
 	*/

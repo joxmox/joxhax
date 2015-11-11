@@ -10,6 +10,9 @@
 #include <iostream>
 #include <string>
 
+#define NULLPOS Position {0, 0}
+#define NOPOS Position {-1, -1}
+
 class Position {
 	int row;
 	int col;
@@ -25,10 +28,16 @@ public:
 	void moveRight();
 	bool onScreen() const;
 	void setPos(int row, int col);
-	void operator ++();
-	void operator ++(int) {++(*this);}
-	void operator --();
-	void operator --(int) {--(*this);}
+	bool operator ==(Position);
+	bool operator !=(Position);
+	Position operator ++();
+	Position operator ++(int);
+	Position operator --();
+	Position operator --(int);
+	Position operator -(Position);
+	Position operator +(Position);
+	Position operator +=(Position);
+	Position operator -=(Position);
 	std::string toString() const;
 };
 

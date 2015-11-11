@@ -10,6 +10,7 @@
 #include "ops.hpp"
 #include <string>
 #include "Debug.hpp"
+#include "parse.hpp"
 
 using namespace std;
 
@@ -66,7 +67,7 @@ void Screen::printStatus() {
 }
 
 void Screen::insertChar(int key) {
-	buf->adjustRow(pos);
+	adjust();
 	buf->insertChar(key);
 	tty->putChar(key);
 	if (pos < siz) pos++;
@@ -122,7 +123,8 @@ void Screen::moveDown() {
 }
 
 void Screen::breakLine() {
-	buf->adjustRow(pos);
+	adjust();
+	buf->recalcMarks(1);
 	buf->breakLine();
 	pos.setCol(0);
 	tty->move(pos);
@@ -136,9 +138,135 @@ void Screen::breakLine() {
 
 
 void Screen::deleteChar() {
-	buf->adjustRow(pos);
-
+	DBG << "enter" << endl;
+	adjust();
+	if (pos.getCol() > 0) {
+		tty->move(--pos);
+		tty->delChar();
+		buf->delChar();
+	} else {
+		int br = buf->getRow();
+		DBG << "Buffer row: " << br << endl;
+		if (br > 0) {
+			int nc = buf->joinLines();
+			DBG << "new column: " << nc << endl;
+			tty->delLine();
+			pos.moveUp();
+			tty->move(pos);
+			DBG << "new pos (after move up): " << pos << endl;
+			tty->print(buf->getCurLine());
+			tty->move(siz.getLowLeft());
+			tty->print(buf->getLine(siz.getEndRow() + br - pos.getRow() - 1));
+			pos.setCol(nc);
+			buf->recalcMarks(-1);
+		}
+	}
 }
+
+void Screen::adjust() {
+	int obs = buf->getDataSize();
+	buf->adjustRow(pos);
+	int nbs = buf->getDataSize();
+	DBG << "obs:" << obs << ", nbs:" << nbs << endl;
+	if (nbs > obs) {
+		for (int i=nbs-obs; i>=0 && pos.getRow() - i + 1 < siz; i--) {
+			DBG << "moving to row " << pos.getRow() - i + 1 << endl;
+			tty->move(pos.getRow() - i + 1, 0);
+			DBG << "printing buffer line #" << nbs - i << ": " << buf->getLine(nbs - i) << endl;
+			tty->print(buf->getLine(nbs - i));
+			tty->clearToEol();
+			tty->move(pos);
+		}
+	}
+}
+
+void Screen::gotoPos(Position p) {
+	DBG << "enter" << endl;
+	int markRow = p.getRow();
+	markRow = min(markRow, buf->getEndLine());
+	markRow = max(markRow, 0);
+	int markCol = p.getCol();
+	markCol = min(markCol, static_cast<int>(buf->getLine(markRow).length()));
+	int bufRow = buf->getRow();
+	int topRow = bufRow - pos.getRow();
+	int botRow = topRow + siz.getEndRow();
+	int scrRow = pos.getRow();
+	DBG << "markRow:" << markRow << ", markCol:" << markCol << ", topRow:" << topRow << ", botRow:" << botRow << endl;
+	if (markRow < topRow || markRow > botRow) {
+		DBG << "outside current view" << endl;
+		if (markRow < topRow) {
+			scrRow = 0;
+		} else {
+			scrRow = siz.getEndRow();
+		}
+		buf->setPos({markRow, markCol});
+		displayBuffer();
+	} else {
+		DBG << "inside current view" << endl;
+		scrRow += markRow - buf->getRow();
+		buf->setPos({markRow, markCol});
+	}
+	pos = {scrRow, markCol};
+}
+
+
+void Screen::cmdMark(string mark) {
+	buf->setMark(mark);
+	tty->putMessage("Mark " + mark + " set.");
+	DBG << "mark " << mark << " set at " << buf->getPos() << endl;
+}
+
+void Screen::cmdLine(string line) {
+	int ln = stoi(line);
+	gotoPos(Position{ln - 1, 0});
+}
+
+void Screen::cmdGoto(string mark) {
+	Position p = buf->getMark(mark);
+	if (p == NOPOS) {
+		tty->putMessage("Mark " + mark + " not set.");
+	} else {
+		gotoPos(p);
+		tty->putMessage("Going to mark " + mark + ".");
+	}
+}
+
+void Screen::readCommand() {
+	static vector<pair<int, string>> ptab {
+		{1, "mark *"},
+		{2, "line *"},
+		{3, "goto *"},
+		{4, "select"},
+		{5, "delete"},
+		{6, "insert"},
+    };
+	static Parse parse {ptab};
+	string cmd = tty->readCmd();
+	DBG << "parsing command: " << cmd << endl;
+	int res = parse.decode(cmd);
+	switch(res) {
+	case -2 : tty->putMessage("No command given."); break;
+	case -1 : tty->putMessage("Ambiguous command."); break;
+	case  0 : tty->putMessage("Unrecognized command."); break;
+	case  1: cmdMark(parse.getParam()); break;
+	case  2: cmdLine(parse.getParam()); break;
+	case  3: cmdGoto(parse.getParam()); break;
+	default : tty->putMessage("Command #" + to_string(res) + " OK.");
+
+	/*
+	 *
+	case  1 : cmdShowDefault(); break;
+	case  2 : cmdShowScreen(); break;
+	case  3 : cmdMark(parse.getParam()); break;
+	case  4 : cmdLine(parse.getParam()); break;
+	case  5 : cmdGoto(parse.getParam()); break;
+	case  6 : cmdGoto(parse.getParam()); break;
+	case  7 : cmdGoto(parse.getParam()); break;
+	case  8 : cmdGoto(parse.getParam()); break;
+	*/
+	}
+}
+
 
 /*
 void Eve::deleteChar() {
@@ -162,4 +290,4 @@ void Eve::deleteChar() {
   }
 }
 
-/*
+*/
