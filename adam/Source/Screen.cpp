@@ -14,9 +14,17 @@
 
 using namespace std;
 
+int Screen::idCnt = 0;
+
+
 void Screen::initScreen() {
+	id = ++idCnt;
 	if (mode == full) {
-	  siz = tty->getScreenSize();
+	  Size ttySiz = tty->getScreenSize();
+	  siz = {ttySiz.getStart(), {ttySiz.getEndRow() - 3, ttySiz.getEndCol()}};
+	  win = tty->createWin(siz);
+	  Size stsSiz = {{ttySiz.getEndRow() - 2, ttySiz.getEndCol()}, {ttySiz.getEndRow() - 2, ttySiz.getEndCol()}};
+	  stsWin = tty->createWin(stsSiz);
 	  statusPos = tty->getStatPos();
 	  DBG << "Screen initialized: " << siz << endl;
 	}
@@ -36,6 +44,7 @@ bool Screen::inView(Position& bPos) {
 
 void Screen::setBuffer(Buffer* b) {
 	buf = b;
+	stsBuf = b->getName();
 }
 
 Position& Screen::getPos() {
@@ -46,16 +55,30 @@ void Screen::setSize(Size& s) {
 	siz = s;
 }
 
+string Screen::toString() const{
+	ostringstream os;
+	os << "Scr[" << id << "] " << "size:" << siz << ", ";
+	os << "pos:" << pos << ", ";
+	if (buf != nullptr) {
+	  os << "buf:" << buf->getName();
+	} else {
+		os << "buf:(none)";
+	}
+	os << ", win:" << win;
+	return os.str();
+}
+
 void Screen::displayBuffer() {
-	DBG << "starting" << endl;
+	DBG << "starting " << win << endl;
     int f = buf->getRow();
     for (Position p=siz.getStart(); p < siz; p.moveDown()) {
-        tty->move(p);
-        tty->print(buf->getLine(f++), siz.getEndCol());
-        tty->clearToEol();
+        tty->move(win, p);
+        tty->print(win, buf->getLine(f++), siz.getEndCol());
+        tty->clearToEol(win);
     }
     printStatus();
-    DBG << "leaving" << endl;;
+    tty->refresh();
+    DBG << "leaving" << endl;
 }
 
 void Screen::printStatus() {
@@ -105,7 +128,7 @@ void Screen::moveUp() {
 			tty->move(siz.getStart());
 			tty->insertLine();
 			tty->move(siz.getStart());
-			tty->print(buf->getCurLine());
+			tty->print(buf->getCurLine(), siz.getEndCol());
 		}
 	}
 }
@@ -118,8 +141,14 @@ void Screen::moveDown() {
 		tty->move(0, 0);
 		tty->delLine();
 		tty->move(siz.getLowLeft());
-		tty->print(buf->getCurLine());
+		tty->print(buf->getCurLine(),siz.getEndCol());
 	}
+}
+
+void Screen::pageUp() {
+}
+
+void Screen::pageDown() {
 }
 
 void Screen::breakLine() {
@@ -224,10 +253,10 @@ void Screen::cmdLine(string line) {
 void Screen::cmdGoto(string mark) {
 	Position p = buf->getMark(mark);
 	if (p == NOPOS) {
-		tty->putMessage("Mark " + mark + " not set.");
+		tty->putMessage("Marker " + mark + " not set.");
 	} else {
 		gotoPos(p);
-		tty->putMessage("Going to mark " + mark + ".");
+		tty->putMessage("Going to mark: " + mark + "");
 	}
 }
 
@@ -291,3 +320,8 @@ void Eve::deleteChar() {
 }
 
 */
+
+ostream& operator <<(ostream& os, const Screen scr) {
+	os << scr.toString();
+	return os;
+}

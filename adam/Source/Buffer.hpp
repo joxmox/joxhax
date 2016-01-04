@@ -57,6 +57,7 @@ public:
 	void setMark(std::string);
 	Position getMark(std::string);
 	void recalcMarks(int);
+	std::string getName();
 
 };
 

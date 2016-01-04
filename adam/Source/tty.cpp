@@ -12,10 +12,13 @@
 
 using namespace std;
 
+int Tty::winCnt = 0;
+
 
 Tty::Tty() {
 	  DBG << "Creating tty..." << endl;
 	  initscr();
+//	  winMap[0] = stdscr;
 
 	  scr = nullptr;
 
@@ -101,6 +104,10 @@ void Tty::print(string s,int n) {
   if (sts == ERR) DBG << "error printing" << endl;
 }
 
+void Tty::print(int w, string s, int n) {
+    waddnstr(winMap[w], s.c_str(), n);
+}
+
 void Tty::reverseOn() {
 	wattron(stdscr, A_REVERSE);
 }
@@ -142,9 +149,15 @@ void Tty::move(Position p) {
 	wmove(stdscr, p.getRow(), p.getCol());
 }
 
+void Tty::move(int w, Position p) {
+	wmove(winMap[w], p.getRow(), p.getCol());
+}
+
 void Tty::refresh() {
-  DBG << "refreshing" << endl;
-  wrefresh(stdscr);
+	for (auto it = winMap.begin(); it!=winMap.end(); ++it) {
+		DBG << "refreshing window " << it->first << endl;
+		wrefresh(it->second);
+	}
 }
 
 int Tty::getKey() {
@@ -193,6 +206,10 @@ void Tty::clearToEol() {
   wclrtoeol(stdscr);
 }
 
+void Tty::clearToEol(int w) {
+	wclrtoeol(winMap[w]);
+}
+
 void Tty::clearAll() {
   wclear(stdscr);
 }
@@ -237,3 +254,11 @@ Position Tty::getStatPos() {
 	return {height - 3, 0};
 }
 
+int Tty::createWin(Size siz)  {
+	int winid = ++winCnt;
+	int nLines = siz.getEndRow() - siz.getStartRow() + 1;
+	int nCols = siz.getEndCol() - siz.getStartCol() + 1;
+	//WINDOW* apa = newwin(nLines, nCols, siz.getStartRow(), siz.getStartCol());
+	winMap[winid] = newwin(nLines, nCols, siz.getStartRow(), siz.getStartCol());
+	return winid;
+}

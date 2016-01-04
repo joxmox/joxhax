@@ -11,6 +11,7 @@
 #include "tty.hpp"
 #include "Buffer.hpp"
 #include "Size.hpp"
+#include <iostream>
 
 class Tty;
 
@@ -18,12 +19,20 @@ class Screen {
 public:
 	enum scrMode {full, upper, lower};
 private:
+	static int idCnt;
+	int id = 0;
+	int win = 0;
+	int stsWin;
 	Tty* tty;
 	Buffer* buf;
 	scrMode mode;
 	Size siz;
 	Position pos;
 	Position statusPos;
+	std::string stsBuf = "MAIN";
+	std::string stsWrt = "Write";
+	std::string stsIns = "Insert";
+	std::string stsDir = "Forward";
 public:
 	Screen(Tty* tty, scrMode mode = full);
 	Screen(Tty* tty, Buffer* buf, scrMode mode = full);
@@ -49,6 +58,15 @@ public:
 	void cmdMark(std::string);
 	void cmdLine(std::string);
 	void cmdGoto(std::string);
-
+	void pageUp();
+	void pageDown();
+	std::string toString() const;
+	void setStsBuf(std::string s) {stsBuf = s;}
+	std::string getStsBuf() {return stsBuf;}
+	std::string getStsWrt() {return stsWrt;}
+	std::string getStsIns() {return stsIns;}
+	std::string getStsDir() {return stsDir;}
+	int getId() const {return id;}
 };
+std::ostream& operator <<(std::ostream&, const Screen);
 

@@ -2,6 +2,7 @@
 
 #include <ncurses.h>
 #include <string>
+#include <map>
 #include <fstream>
 #include "Size.hpp"
 #include "Screen.hpp"
@@ -10,6 +11,7 @@
 class Screen;
 
 class Tty {
+  static int winCnt;
   int height;
   int width;
   int row;
@@ -23,6 +25,7 @@ class Tty {
   Position msgPos;
   Position cmdPos;
   Screen* scr;
+  std::map<int, WINDOW*> winMap;
 public:
   Tty();
   ~Tty();
@@ -33,15 +36,18 @@ public:
   void delLine();
   std::string getLine(int l);
   void print(std::string s, int n=-1);
+  void print(int, std::string, int = -1);
   void mvPrint(int r, int c, std::string s);
   void move(int r, int c);
   void move(Position p);
+  void move(int, Position);
   void refresh();
   int getKey();
   int mvGetKey(int r, int c);
   void putMessage(std::string s);
   void putStatus(std::string s);
   void clearToEol();
+  void clearToEol(int);
   void insertLine();
   void clearAll();
   void printRev();
@@ -60,4 +66,5 @@ public:
   void setScreen(Screen*);
   Screen* getScreen();
   Position getStatPos();
+  int createWin(Size);
 };

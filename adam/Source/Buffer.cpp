@@ -43,6 +43,10 @@ string Buffer::getFileName() {
 	return file;
 }
 
+string Buffer::getName() {
+	return name;
+}
+
 string& Buffer::currentLine() {
 	return data[pos.getRow()];
 }

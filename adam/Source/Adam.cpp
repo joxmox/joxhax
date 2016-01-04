@@ -15,6 +15,7 @@
 #include "ops.hpp"
 #include <iostream>
 #include <vector>
+#include <map>
 #include <unordered_map>
 
 using namespace std;
@@ -25,7 +26,7 @@ unordered_map<string, Buffer*> bufferMap;
 Tty* tty;
 int key;
 Screen* scr;
-unordered_map<string, Screen*> scrMap;
+map<int, Screen*> scrMap;
 
 
 bool dispatchKey(int key) {
@@ -41,6 +42,8 @@ bool dispatchKey(int key) {
 	if (key == 263) scr->deleteChar();
 	if (key == 261) scr->moveRight();
 	if (key == 276) scr->readCommand();
+	if (key == 338) scr->pageUp();
+	if (key == 339) scr->pageDown();
 	if (key == 407) sts = false;
 	if (key == 410) tty->handleResize();
 //	deb("key=" << key << ", Esc=" << escapeActive);
@@ -83,10 +86,10 @@ int main(int argc, char* argv[]) {
 	scr = new Screen(tty, Screen::full);
 	DBG << "default full screen created " << endl;
 	tty->setScreen(scr);
-	scrMap["default"] = scr;
+	scrMap[scr->getId()] = scr;
 //	scrMap["upper"] = new Screen(tty, upperHalf);
 //	scrMap["lower"] = new Screen(tty, lowerHalf);
-	DBG << "created other screens" << endl;
+//	DBG << "created other screens" << endl;
 
 	buffer = new Buffer(fileName);
 	bufferVec.push_back(buffer);
@@ -94,6 +97,7 @@ int main(int argc, char* argv[]) {
 	DBG << "buffer " << fileName << " created" << endl;
 	scr->setBuffer(buffer);
 	DBG << "default screen linked to buffer" << endl;
+	DBG << *scr << endl;
 
 	int readLines = buffer->readFile(fileName);
 	DBG << readLines << " lines read from " << fileName << endl;
