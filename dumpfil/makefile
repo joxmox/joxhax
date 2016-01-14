@@ -13,6 +13,18 @@ all : $(bin)dmpfil
 
 test3 : $(bin)test3
 
+condtest : $(bin)condtest
+	$(bin)condtest
+
+$(bin)condtest : $(obj)condtest.o $(obj)Condition.o
+	$(link)
+	
+$(obj)condtest.o : $(src)condtest.cpp $(src)Condition.hpp
+	$(compile)
+	
+$(obj)Condition.o : $(src)Condition.cpp $(src)Condition.hpp
+	$(compile)
+
 
 $(bin)dmpfil : $(obj)dmpfil.o $(obj)dfloat.o 
 	$(link)
