@@ -1,0 +1,52 @@
+MAP (CLLOAN)                                                            &
+	!								&
+	! File name   : Commercial Loan Data File			&
+	! File spec   : CLFILE:CLLOAN.IND				&
+	! File type   : Indexed 					&
+	! 		Primary Key LOAN.NO$,				&
+	!		Alternate Key LOAN.CUST.NO$ DUPLICATES,		&
+	!		Alternate Key LOAN.ISS.DATE$ DUPLICATES,	&
+	!		Alternate Key LOAN.MAT.DATE$ DUPLICATES CHANGES &
+	!		Alternate Key LOAN.PRTCP.NO$ DUPLICATES CHANGES &
+	! File freq   : Permanent 					&
+	! Record desc : Fixed 						&
+	!      Length : 956 bytes					&
+	! Date        : 30-JULY-1986					&
+	! Author      : AMER ELMOURAD					&
+	! Description : Containe all information about the loan		&
+	!		It gets updated on line and during the E.O.D    &
+	!								&
+	! Revision History: 						&
+	! 1-16-96	Louis Quintana   Adding Sebtrade number field.	&
+	!								&
+	!								&
+	!---------------------------------------------------------------&
+	!								&
+         LOAN.NO$=11%,           !Loan number - right justified zero fill      &
+	 LOAN.TR.SEQ.NO$=5%,     !Sequence number of last processed trans      &
+				 !  right justified zero fill 		       &
+	 LOAN.REC.FLAG$=1%,      !Record-in-use flag: 1 -> free; 2 -> in use   &
+         LOAN.OP.IND$=4%,        !Operator ID from last processed transaction  &
+         LOAN.DEP.NO$=4%,        !Department No. from operator control table   &
+         LOAN.UNIT.NO$=4%,       !Unit Number from operator control table      &
+         LOAN.GL.AC.NO$=20%,     !Principal General Ledger account number      &
+	                         !Key to accounting table 		       &
+        	                 !Right justified space fill 		       &
+				 !R3 - Profit Center GL #		       &
+         LOAN.ASS.LIB.FL$=1%,    !Asset - Liability indicator (A/L)            &
+         LOAN.CURR$=3%, 	 !Currency code - right justified space fill   &
+         LOAN.SEC.IND$=1%,       !Secured indicator:     		       &
+	                         !U -> Unsecured         		       &
+        	                 !S -> Secured           		       &
+ WORD    LOAN.KAKA.WORD2       	         !P -> Partially Secured 		       &
+         LOAN.MAT.WORD2%,      !Maturity date - IBIS packed date format      &
+
+ MAP (CLLOAN) LOAN.EVERYTHING$=964$
+ MAP (CLLOAN)   FILL$=29%,                              &
+                LOAN.ALL$=339%
+ MAP (CLLOAN)   &
+        STRING          FILL = 29%, &
+        GLNO_REC        LOAN.GL, &
+        STRING          FILL = 310%, &
+        ITYP_REC        LOAN.TYP
+

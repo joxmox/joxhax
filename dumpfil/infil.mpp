@@ -1,0 +1,322 @@
+MAP (CLLOAN)                                                            &
+	!								&
+	! File name   : Commercial Loan Data File			&
+	! File spec   : CLFILE:CLLOAN.IND				&
+	! File type   : Indexed 					&
+	! 		Primary Key LOAN.NO$,				&
+	!		Alternate Key LOAN.CUST.NO$ DUPLICATES,		&
+	!		Alternate Key LOAN.ISS.DATE$ DUPLICATES,	&
+	!		Alternate Key LOAN.MAT.DATE$ DUPLICATES CHANGES &
+	!		Alternate Key LOAN.PRTCP.NO$ DUPLICATES CHANGES &
+	! File freq   : Permanent 					&
+	! Record desc : Fixed 						&
+	!      Length : 956 bytes					&
+	! Date        : 30-JULY-1986					&
+	! Author      : AMER ELMOURAD					&
+	! Description : Containe all information about the loan		&
+	!		It gets updated on line and during the E.O.D    &
+	!								&
+	! Revision History: 						&
+	! 1-16-96	Louis Quintana   Adding Sebtrade number field.	&
+	!								&
+	!								&
+	!---------------------------------------------------------------&
+	!								&
+         LOAN.NO$=11%,           !Loan number - right justified zero fill      &
+	 LOAN.TR.SEQ.NO$=5%,     !Sequence number of last processed trans      &
+				 !  right justified zero fill 		       &
+	 LOAN.REC.FLAG$=1%,      !Record-in-use flag: 1 -> free; 2 -> in use   &
+         LOAN.OP.IND$=4%,        !Operator ID from last processed transaction  &
+         LOAN.DEP.NO$=4%,        !Department No. from operator control table   &
+         LOAN.UNIT.NO$=4%,       !Unit Number from operator control table      &
+         LOAN.GL.AC.NO$=20%,     !Principal General Ledger account number      &
+	                         !Key to accounting table 		       &
+        	                 !Right justified space fill 		       &
+				 !R3 - Profit Center GL #		       &
+         LOAN.ASS.LIB.FL$=1%,    !Asset - Liability indicator (A/L)            &
+         LOAN.CURR$=3%, 	 !Currency code - right justified space fill   &
+         LOAN.SEC.IND$=1%,       !Secured indicator:     		       &
+	                         !U -> Unsecured         		       &
+        	                 !S -> Secured           		       &
+                	         !P -> Partially Secured 		       &
+         LOAN.MAT.DATE$=6%,      !Maturity date - IBIS packed date format      &
+                        	 !CHR$(255) for demand loans                   &
+         LOAN.TENOR,             !Loan tenor - double precision (8 byte) real  &
+         LOAN.AMOUNT,            !Loan amount -- source currency               &
+	                         !double precision (8 byte) real 	       &
+         LOAN.EQ.AMOUNT, 	 !Loan equivalent amount -- base currency      &
+	                         !double precision (8 byte) real               &
+         LOAN.CONV.RATE, 	 !Loan conversion (spot) rate                  &
+	                         !double precision (8 byte) real  	       &
+         LOAN.CUST.NO$=13%,      !Customer number - right justified space fill &
+         LOAN.CONV.RATE.RECP$=1%,!'R' if LOAN.CONV.RATE is reciprical	       &
+         LOAN.TR.DATE$=6%,       !Loan transaction date (date of loan agrement &
+        	                 !IBIS packed date format 		       &
+         LOAN.ISS.DATE$=6%,      !Loan issue date (drawdown date)  	       &
+                	         !IBIS packed date format 		       &
+         LOAN.INT.RATE, 	 !Interest rate for fix rate loans  	       &
+                     		 !Spread for floating rate loans   	       &
+                	         !double precision (8 byte) real  	       &
+         LOAN.INT.RAT.BAS$=1%,   !Interest calculation year base code:         &
+                        	 ! 1 -> 360 day year                           &
+                        	 ! 2 -> 365 day year                           &
+                        	 ! 3 -> 366 day year                           &
+                        	 ! 4 -> 30/360-30 days per month, 360 per year &
+         LOAN.FF.IND$=1%,        !Federal funds code (CIF table) 	       &
+         LOAN.DAL.INT.ACCR,      !Daily interest accrual amount  	       &
+      		                 !double precision (8 byte) real  	       &
+				 !unrounded except for discount loans	       &
+         LOAN.TOT.INT.DUE,       !Total interest due (fixed rate loans)        &
+                        	 !double precision (8 byte) real  	       &
+				 !This is actually total interest on the loan, &
+				 !not reduced by interest paid.		       &
+				 !LOAN.NEG.INT.ADJ.AMT is included.	       &
+         LOAN.INT.PAY.FR$=2%,    !Interest payment frequency                   &
+                      		 ! 1 - 98 -> number of months between payments &
+                   		 !     99 -> due at maturity 		       &
+         LOAN.INT.PAY.DAY$=2%,   !Interest payment day (day of month) 	       &
+         LOAN.PRIN.PAY.FR$=2%,   !Principal payment frequency     	       &
+                      		 ! 1 - 98 -> number of months between payments &
+                    	         !     99 -> due at maturity 		       &
+         LOAN.PRIN.PAY.DAY$=2%,	 !Principal payment day (day of month)         &
+         LOAN.BRANCH$=1%,        !Branch code 				       &
+	 LOAN.INTERNAL.CODE$=2%, !Field for site-specific coding	       &	
+	 LOAN.OFF.BALANCE.IND$=1%,!Off balance sheet indicator		       &
+         LOAN.OFFICER$=3%,       !Loan officer (CIF account manager table)     &
+         LOAN.ROLL.IND$=1%,      !Rollover indicator:     		       &
+                       		 ! Y -> rollover loan     		       &
+                        	 ! N -> no rollover       		       &
+         LOAN.REC.IND$=1%,       !			  		       &
+         LOAN.REF.LINE1$=35%,    !2 lines of free text    		       &
+         LOAN.REF.LINE2$=35%,    !for reference only        	               &
+	 LOAN.FIDUC.DEPOSIT.IND$=1%, != F IF Fiduciary drawn against a Deposit &
+				 != D If it is a deposit loan tied to a Fid.   &
+         LOAN.MAT.INT.SETTL.IND$=1%, !Flag to indicate if interest maturity    &
+                             	     !instructions exist (Y/N)                 &
+         LOAN.MAT.SETTL.IND$=1%,     !Flag to indicate if principal maturity   &
+                           	     !instructions exist (Y/N)                 &
+	 LOAN.DECIMAL.PLACES%,	 !Loan currency decimal places		       &
+         LOAN.CONT.COUNT$=2%,	 !Number of hedge contracts for loan           &
+         LOAN.VAR.RATE, 	 !Variable interest rate 		       &
+	                       	 !double precision (8 byte) real               &
+         LOAN.RATE.TYPE$=2%,     !Interest rate type:  			       &
+	                         ! 1 -> fix rate loan 		               &
+        	                 ! 2 - 99 -> variable rate type 	       &
+                	         !           as defined by floating rate table &
+         LOAN.PERC.IND$=1%,      !Percentage indicator : 		       &
+				 !P->LOAN.INT.RATE used as % of LOAN.VAR.RATE  &
+				 !other- LOAN.INT.RATE added to  LOAN.VAR.RATE &
+         LOAN.REPAY.TYPE$=1%,    !Loan repayment type code: 		       &
+                        	 ! 1 - Separate principal and interest         &
+                        	 ! 2 - Single payment (mortgage type)          &
+         LOAN.LIBOR.EXP.DATE$=6%,!Interest rate expiry date     	       &
+	                         !IBIS packed date format     		       &
+         LOAN.INT.PAID.TO.DATE$=6%, !Interest paid-to date       	       &
+                             	    !IBIS packed date format   		       &
+         LOAN.SECURED.AMOUNT,    !Secured amount on loan 		       &
+         LOAN.MARGIN,            !Margin percent used by Landerbank 	&
+         LOAN.UNEARNED.DISC.AMT, !Unearned discount amount for discount loan   &
+         LOAN.NET.PROCEED.AMT,   !Net proceeds (ie. issue settlement amount)   &
+	                         !for discount loan (8 byte real) 	       &
+	 LOAN.NEG.INT.ADJ.AMT,	 !Total amount of negative interest adj.       &
+				 !stored as absolute value. This must be added &
+				 !to the amount paid when using int paid to    &
+				 !calculate amount due.			       &
+	 LOAN.ROLL.INST.ENT%,	 !set to -1 if rollover instruction have       &
+				 !been entered for rollover coming due. This   &
+				 !is cleared on rollover date.	               &
+	 LOAN.ROLL.ISSUE.DATE$=6%,!Issue date of rollover, or issue date of    &
+				 !non-rollover loan. This is used to check     &
+				 !the oldest allowable back value date.        &
+         LOAN.ORIGINAL.AMOUNT,   !Original amount of loan in source currency   &
+         LOAN.ORIGINAL.EQ.AMOUNT,!Original amount of loan in base currency     &
+         LOAN.COMM.AMOUNT,       !Commission amount  (8 byte real) 	       &
+         LOAN.DAILY.DISSAGIO.AMOUNT, !				               &
+	 LOAN.COMM.LIM.NUMBER$=10%, !Commitment / Line number    	       &
+	 FILL$=1%,		 					       &
+         LOAN.PROFIT.CTR$=2%,   !Profit Center code (CIF table)   	       &
+         LOAN.ACCR.CODE$=1%,     !Accrual Code:          		       &
+	                         ! A -> regular accrual  		       &
+        	                 ! C -> Discount Loan    	               &
+        	                 ! D -> Call loan        		       &
+         LOAN.FED.CLASS$=3%,     !Federal Classification code (CIF table)      &
+         LOAN.TYPE$=8%,  	 !loan type (r3)	       &
+         LOAN.GUAR.IND$=1%,      !Guarantor indicator (Y/N) 		       &
+         LOAN.STATUS$=1%,        !Loan Status:                   	       &
+	                         ! 1 -> Future                   	       &
+        	                 ! 2 -> Open                     	       &
+                	         ! 3 -> Matured                  	       &
+                        	 ! 4 -> Interest Settled         	       &
+	 			 ! 5 -> Principal Settled        	       &
+                        	 ! 6 -> Matured and Settled      	       &
+                        	 ! 7 -> Reversed                 	       &
+	 LOAN.ISS.CABLE.SENT.IND$ = 1%,	! INDICATOR TO SHOW IF CABLE SENT FOR  &
+					! LOAN ISSUE Y = SENT	N = NOT SENT   &
+	 LOAN.INT.CABLE.SENT.IND$ = 1%,	! INTEREST CABLE INDICATOR AS ABOVE    &
+					! FLAG IS SET WHEN A MESSAGE IS SENT TO&
+					! MT AND CLEARED WHEN THE ACCTG IS DONE&
+	 LOAN.PRIN.CABLE.SENT.IND$ = 1%,! PRINCIPALE CABLE INDICATOR AS ABOVE  &
+	 LOAN.DEMAND.PAST.DUE.AMT,	! FOR DEMAND LOANS INTEREST ONLY       &
+	 LOAN.DEMAND.PRIOR.DUE.DATE$=6%,!				       &
+	 LOAN.DEMAND.NEXT.DUE.DATE$=6%,	!				       &
+	 LOAN.MT.DOC.NO%,		! SEQUENCE NO FOR MT INTERFACE         &
+	 LOAN.MT.DOC.REV.NO%,           !    "     "   "  "   REVERSAL 	       &
+	 FILL$=3%,			!				       &
+         LOAN.COMM.CURRENCY$=3%,	!Commitment currency from clhskp       &
+         LOAN.COMM.RATE,		!Commitment to loan conversion rate    &
+	 LOAN.COMM.RATE.RECP$=1%,	!'R' if comm rate is reciprocal	       &
+	 LOAN.MAIL$=1%,			!'Y' to mail confirm/bills	       &
+         LOAN.REFI$=6%, 	 !Loan funding code (not validated)            &
+         LOAN.SECURITY.CODE$=6%, !Loan security code (not validated)           &
+         LOAN.ROLLOVER.DATE$=6%, !Loan rollover date       		       &
+                         	 !IBIS packed date format 		       &
+         LOAN.PRTCP.IND$=1%,     !Flag to indicate if loan is participated     &
+                      		 ! Y => particapation                          &
+                        	 ! N => no participation                       &
+         LOAN.PRTCP.RECOURSE$=1%,!Participation recourse indicator             &
+                           	 !1= with recourse. 'Y' on the pymt. screen.   &
+				 !   ignored by commitment rebuild and ITC     &
+                           	 !2= without recourse. 'N' on pymt. screen     &
+				 !   Increases Remaining amount on commitment  &
+			         !   when a part. Loan is entered.  Decreases  &
+				 !   Remaining amt. when part. Loan payed off  &
+         FILL$=3%,                                                             &
+         LOAN.AUTO.PRIN.PYMT$=1%,!Automatic principal payments (during EOD)    &
+                            	 !Y = yes                                      &
+                           	 !N = manual settlement               	       &
+         LOAN.AUTO.INT.PYMT$=1%, !Automatic Interest payments (during EOD)     &
+                           	 !Y = yes                                      &
+                           	 ! N= manual settlement               	       &
+         LOAN.AUTO.PRIN.PAY.DATE$=6%, !Date of next automatic principal pymt.  &
+                                      !IBIS packed date format         	       &
+         LOAN.AUTO.INT.PAY.DATE$=6%,  !Date of next automatic interest pymt.   &
+                                      !IBIS packed date format         	       &
+	 LOAN.DISSAGIO.AMOUNT,	 ! Amortized Commission Amount		       &
+	 LOAN.DISSAGIO.IND$ = 1%,!	Y= YES 		N= NO		       &
+	 LOAN.FIDUCIARY.IND$ = 1%, !TO show if the loan is a Fiduciary loan    &
+         LOAN.PRTCP.CUST.NO$=13%,!Customer number of asset loan for 	       &
+                           	 !sub participations                	       &
+         LOAN.PRTCP.NO$=11%,     !Asset loan number for sub participations     &
+				 !This is also used for Deposit number		&
+         LOAN.BEGIN.DATE$ = 6%,  ! Variant 2 Option (DSB)		       &
+         LOAN.END.DATE$ = 6%,    !					       &
+         LOAN.LOCAL.SIC$=5%,     !					       &
+         LOAN.COST.TYPE$=2%,     !					       &
+         LOAN.GROSS.IND$=1%,     !					       &
+         FILL$=1%,                                                             &
+         LOAN.COST.CENTER$=4%,	 !Converting Midas to IBIS - Frankfurt only    &
+				 !was LOAN.LAST.NOTE.PAID% - not used	       &
+			 	 !    LOAN.INT.NOTE.PAID%                      &
+         LOAN.ACCR.INT.REC,      !Accrued interest recievable (8 byte rea l    &
+				 !rounded accrued amount less interest paid    &
+				 !This is the amount of interest due on the    &
+				 !loan as of today.			       &
+				 !LOAN.NEG.INT.ADJ.AMT is included.	       &
+         LOAN.TOT.INT.REC,       !Total interest received (8 byte real)        &
+				 !not including LOAN.NEG.INT.ADJ.AMT	       &
+         LOAN.YTD.INT.REC,       !Year to date interest received (8 byte real) &
+         LOAN.DAT.LAST.ACCR$=6%, !Date of last accrual (accrual to-date)       &
+                          	 !IBIS packed date format                      &
+         LOAN.DAT.LS.INT.PAY$=6%,!Date of last interest payment 	       &
+                          	 !IBIS packed date format       	       &
+	 LOAN.RISK.CLASS$=2%,	 !Risk Class code defined on std codes table   &
+         LOAN.DATE.SET$=6%,      !Loan set up date (date entered on system)    &
+                        	 !IBIS packed date format                      &
+         LOAN.PAYOFF.DATE$=6%,   !Date of loan payoff            	       &
+                        	 !IBIS packed date format        	       &
+         LOAN.ACC.TODATE,        !Accrued interest to date (source currency)   &
+                        	 !8 byte real number. rounded - not less       &
+				 !interest paid.			       &
+				 !LOAN.NEG.INT.ADJ.AMT is included.	       &
+         LOAN.ACC.TODATE.EQV,    !Accrued interest to date equivalent (base)   &
+                        	 !8 byte real number 			       &
+         LOAN.TOT.INT.REC.EQV,                                                 &
+         LOAN.LS.ACCT.DATE$=6%,	 !Date of last transaction for loan            &
+                        	 !IBIS packed date format 		       &
+         LOAN.DISSAGIO.ACC.TODATE,   !Amortized Commission Amount accrued todat&
+	 LOAN.SEBTRADE.NO$= 8%,	     !Sebtrade number			       &
+	 fill$=16%,		     !was LOAN.CURR.PERIOD.COMM.INC	       &
+				     !    LOAN.PREV.PERIOD.COMM.INC	       &
+         		     	     !was LOAN.DAILY.PREM.DISC.AMOUNT	       &
+				     !but not used, discounted loans use       &
+				     !LOAN.DAL.INT.ACCR for daily factor       &
+         LOAN.EARNED.DISC.AMT,	     !Earned discount amount	       	       &
+         LOAN.LAST.AUTO.INT.TAX,     !Tax withheld on last int payment if liab &
+				     !    LOAN.PREV.PERIOD.INT.INC	       &
+				     !    LOAN.CURR.PERIOD.INT.INC	       &
+	 LOAN.LAST.AUTO.PRIN.AMT,    !Amount of last auto. prin. pay to MT     &
+	 LOAN.LAST.AUTO.INT.AMT,     !Amount of last auto. interest pay to MT  &
+				     !not reduced by tax withheld              &
+         LOAN.DAT.LAST.RATE.CHNG$=6%,!Date of last interest rate change	       &
+				     !or last libor rate expiration date if    &
+				     !rate didn't change.		       &
+                          	     !IBIS packed date format                  &
+         LOAN.DAT.LAST.PRNC.CHNG$=6%,!Date of last princiapl change            &
+                          	     !IBIS packed date format          	       &
+	 LOAN.LAST.AUTO.PRIN.DATE$=6%,!Date of last auto. principal payment    &
+				     !sent to MT.			       &
+	 LOAN.LAST.AUTO.INT.DATE$=6%,!Date of last auto.interest payment to MT &
+				     ! (was LOAN.LAST.YTD.ACC.TODATE	       &
+         			     ! and LOAN.INT.RECEIVABLE% and	       &
+				     ! LOAN.PRINC.RECEIVABLE%)		       &
+         LOAN.CURR.PERIOD.DOLLAR.DAYS, !Aggregate principal for current month  &
+         LOAN.PREV.PERIOD.DOLLAR.DAYS, !Aggregate principal for previous month &
+         LOAN.PRINC.RECEIVABLE, !Past due principal (according to notes)       &
+				!Includes interest if mortgage note	       &
+         LOAN.INT.RECEIVABLE,   !Past due interest  (according to notes)       &
+			  	!actually - total interest accrued-unrounded   &
+			        !not less interest paid.		       &
+				!LOAN.NEG.INT.ADJ.AMT is included.	       &
+	 LOAN.YTD.DOLLAR.DAYS,	! Aggregate principal for year to date	       &
+	 LOAN.CURR.PER.DISC.INT.EAR, !Aggregate interest on loans for 	       &
+				     !	current month - not just discounted    &
+	 LOAN.INT.PAYOFF.AMT,	     !					       &
+	 LOAN.PREV.PER.DISC.INT.EAR, !Aggregate interest on loans for 	       &
+				     !	previous month - not just discounted   &
+	 LOAN.YTD.DISC.INT.EAR,	     !Aggregate interest on loans for 	       &
+				     !	year to date	not just discounted    &
+	 LOAN.DATE.LAST.INT.DUE$=6%, !Set to last interest note due during     &
+				     !billing.				       &
+	 LOAN.TAX.TODATE,	     !int acrruals reported to cftax to date   &
+	 LOAN.THIRD.PARTY.CUST.NO$ = 13%,				       &
+         LOAN.GUARANTOR.CUST.NO$ = 13%,					       &
+         LOAN.GUARANTOR.NAME$ = 35%,					       &
+         fill$ = 20%,                ! was LOAN.RISK.PARTA$=89%                &
+	 LOAN.GL_BR$=2%,	     ! Branch code 			       &
+	 LOAN.RECLASS.DATE$=6%,	     ! Date of the last TYPE CHANGE for loan   &
+	 LOAN.DEM.PRIN.PRIOR.DUE.DATE$=6%,!	For demand loans principal     &
+	 LOAN.DEM.PRIN.NEXT.DUE.DATE$=6%,	!			       &
+	 LOAN.HIGH.COMM.AMOUNT,	     ! Highest loan original amount in comm cur&
+	 FILL$ = 6%,		     !					       &
+	 LOAN.SECURITY.PERC,				&
+	 LOAN.POS.WEIGHT%,				&
+	 LOAN.ACTUAL.RATE.CHG.DATE$=6%, !Date of last actual rate change	       &
+				     !This date will correspond to a record in &
+				     !the history file.			       &
+	 LOAN.TAX.WITH.PERC,				&
+	 LOAN.TAX.WITH.IND$ = 1%,			&
+	 LOAN.ASSIGNMENT$ = 1%,				&
+	 LOAN.CC2.CODE$ = 1%,				&
+	 LOAN.WIKIND$=1%,            ! WIK Loan indcator Y or N			&
+	 LOAN.IBLC.STD.FLAG$		= 1%,    !The next 5 variable are for lux&
+	 LOAN.ISS.PRINCIPAL.IBLC.CODE$  = 6%,		&
+	 LOAN.MAT.PRINCIPAL.IBLC.CODE$  = 6%,		&
+	 LOAN.ISS.SETT.IBLC.CODE$ 	= 6%,		&
+	 LOAN.MAT.SETT.IBLC.CODE$ 	= 6%,		&
+	 LOAN.INT.IBLC.CODE$ 		= 6%,		&
+         LOAN.AUTH.OFFICER$=3%,  !Auth.officer (CIF account manager table)     &
+	 LOAN.BILLING.DAYS%,				&
+	 LOAN.COLLATERAL.REQ.MINIMUM,			&
+	 LOAN.COLLATERAL.VALUE,				&
+	 LOAN.COLLATERAL.REVAL.DATE$ = 6%,		&
+	 FILL$=1%		     !MAP FOR CL  LOAN
+ MAP (CLLOAN)	LOAN.EVERYTHING$=964%
+ MAP (CLLOAN)	FILL$=29%,				&
+	 	LOAN.ALL$=339%
+ MAP (CLLOAN)	FILL$=412%,				&
+		LOAN.MISC1$=71%
+ MAP (CLLOAN)	&
+	STRING		FILL = 29%, &
+	GLNO_REC	LOAN.GL, &
+	STRING		FILL = 310%, &
+	ITYP_REC	LOAN.TYP
