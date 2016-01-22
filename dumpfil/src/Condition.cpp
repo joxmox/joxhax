@@ -60,7 +60,8 @@ string getOp(const string& s) {
 CondEle::CondEle(const string& s) {
 	string op = getOp(s);
 	if (op == "") throw logic_error("no relational operator in expression");
-	vector<string>svec = s.split(op);
+	vector<string>svec = s_split(s, op);
+
 }
 
 Condition::Condition(string s) {

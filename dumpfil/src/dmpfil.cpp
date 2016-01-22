@@ -105,6 +105,7 @@ int main(int argc, char* argv[]) {
 	string searchVal;
 	string varStr = getParamS("Variables to display (RETURN for All)");
 	string searchStr = askFor("Search criteria (RETURN for None)");
+	Condition cond {searchStr};
 
 	s_collapse(varStr);
 	for (auto str : s_split(varStr, ",")) {

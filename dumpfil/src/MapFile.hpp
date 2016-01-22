@@ -10,6 +10,7 @@
 #include <sys/ioctl.h>
 #include "strings.hpp"
 #include "dfloat.hpp"
+#include "Condition.hpp"
 
 using namespace std;
 
@@ -45,6 +46,7 @@ public:
   void dump();
   void display();
   void display(char*);
+  void display(char*, Condition&)
   string getValue(char*, int);
   string getStringVal(char*, int);
   string getWordVal(char*, int);
@@ -257,6 +259,16 @@ void MapFile::display(char *buff) {
     cout << setw(varLen) << left << vars[i].name << " : ";
     cout << right << str << endl;
   }
+}
+
+void MapFile::display(char *buff, Condition& cond) {
+	  for (auto i : selArr) {
+	    string str = getValue(buff, i);
+	    cout << setw(3) << i + 1 << "-";
+	    cout << "[" << vars[i].type << "]";
+	    cout << setw(varLen) << left << vars[i].name << " : ";
+	    cout << right << str << endl;
+	  }
 }
 
 string mapVar::toString() const{

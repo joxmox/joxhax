@@ -1,15 +1,15 @@
 #include <iostream>
-#include <cstring>
+#include <string>
 
 using namespace std;
 
+bool par(string str) {
+	string s = str;
+	bool result = true;
+
+	return result;
+}
+
 int main() {
-  double d = 17.0;
-  char s[8];
-  double* p = &d;
-  memcpy(s, p, 8);
-  d = -666;
-  cout << d << endl;
-  memcpy(p, s, 8);
-  cout << d << endl;
+
 }

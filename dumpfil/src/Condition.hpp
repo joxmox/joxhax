@@ -31,7 +31,7 @@ class Condition {
 	std::vector<int> values;
 public:
 	Condition() = delete;
-	Condition(std::string);
+	Condition(std::string>);
 	std::vector<std::string>getVars () const;
 	bool evaluate (std::vector<int>) const;
 	virtual ~Condition();
