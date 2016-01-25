@@ -24,7 +24,7 @@ void s_remove(string& s, const string& p) {
 
 void s_replace(string& s, const string& f, const string& t) {
   regex r_replace {f};
-  s = regex_replace(s, r_replace, "$1");
+  s = regex_replace(s, r_replace, t);
 }
 
 void s_decomment(string& s) {

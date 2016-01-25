@@ -52,28 +52,20 @@ clean :
 test : $(bin)test
 	$(bin)test
 	
-test4 : $(bin)test4
-	$(bin)test4
+test5 : $(bin)test5
+	$(bin)test5
 
-$(bin)test : $(obj)test.o $(obj)strings.o $(obj)Condition.o
+$(bin)test5 : $(obj)test5.o $(obj)strings.o $(obj)rpnExp.o
 	$(link)
 	
-test2 : $(bin)test2
-	$(bin)test2
-
-$(bin)test2 : $(obj)test2.o 
-	$(link)
-	
-test4 : $(bin)test4
-	$(bin)test4
-
-$(bin)test3 : $(obj)test3.o 
-	$(link)
-	
-$(obj)%.o : $(src)%.cpp
+$(obj)test5.o : $(src)test5.cpp $(src)rpnExp.hpp $(src)strings.hpp
 	$(compile)
 	
-$(bin)% : $(obj)%.o
-	$(link)
+$(obj)strings.o : $(src)strings.cpp $(src)strings.hpp
+	$(compile)
+	
+$(obj)rpnExp.o : $(src)rpnExp.cpp $(src)rpnExp.hpp $(src)strings.hpp
+	$(compile)
+	
 
 

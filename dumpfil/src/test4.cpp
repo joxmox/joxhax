@@ -8,7 +8,8 @@
 #include <iostream>
 #include <string>
 #include <map>
-#include <stack>
+#include <vector>
+#include <regex>
 
 using namespace std;
 
@@ -31,6 +32,8 @@ static map<operType, int> operValue {
 	{land, 50},
 };
 
+
+
 class polEle {
 public:
 private:
@@ -45,6 +48,16 @@ public:
 	polEle() = delete;
 	int getPrec() {return prec;}
 	operType getOper() {return oper;}
+};
+
+class polStack : public vector<polEle*> {
+	string name;
+public:
+	polStack(const string& n): name(n) {}
+	void push(polEle*);
+	polEle* pop();
+	polEle* peek();
+	void dump();
 };
 
 polEle::polEle(operType op) {
@@ -62,14 +75,40 @@ class polExp {
 	void doToken(const string&);
 	void doLeft();
 	void doRight();
-	stack<polEle*> resultStack;
-	stack<polEle*> operStack;
+	polStack resultStack;
+	polStack operStack;
 public:
 	enum types {undef, head, var, sval, nval, oper};
 	enum opers {plus, minus, eq, gt};
 	polExp(const string&);
 	bool eval(map<string, string>&, map<string, char>&);
 };
+
+vector<string> regSplit(const string& s, const string& d) {
+  regex r {d};
+  vector<string> v;
+  sregex_token_iterator i {s.begin(), s.end(), r, -1};
+  sregex_token_iterator e;
+  for ( ; i != e; ++i) {
+    v.push_back(*i);
+  }
+  return v;
+}
+
+void regReplace(string& s, const string& f, const string& t) {
+	regex r1 {f};
+	s = regex_replace(s, r1, t);
+}
+
+void strTrim(string& s) {
+//	static string operList = "\\=\\<\\>\\!\\+\\-\\*\\/\\%\\^";
+	static string operList = "\\=\\<\\>\\!\\+\\-\\/\\*\\%\\^";
+	regReplace(s, "\\s+", " ");
+	regReplace(s, "(^\\s|\\s$)", "");
+	regReplace(s, "([" + operList + "])([a-zA-Z0-9])", "$1 $2");
+	cout << s << endl;
+	regReplace(s, "([a-zA-Z0-9])([" + operList + "])", "$1 $2");
+}
 
 bool isQuoted(const string& s) {
 	if (s.size() < 2) return false;
@@ -98,6 +137,7 @@ bool okVariable(const string& s) {
 
 
 void polExp::doToken(const string& s) {
+	cout << "processing token: " << s << endl;
 	polEle* newEle;
 	bool oflag = false;
 	if (isQuoted(s)) {
@@ -110,9 +150,8 @@ void polExp::doToken(const string& s) {
 
 	else if (operName.find(s) != operName.end()) {
 		newEle = new polEle {operName[s]};
-		while (operStack.top()->getPrec() >= newEle->getPrec()) {
-			resultStack.push(operStack.top());
-			operStack.pop();
+		while (operStack.peek()->getPrec() >= newEle->getPrec()) {
+			resultStack.push(operStack.pop());
 		}
 		oflag = true;
 	}
@@ -133,25 +172,41 @@ void polExp::doLeft() {
 }
 
 void polExp::doRight() {
-	polEle* polTmp = operStack.top();
-	operStack.pop();
+
+	polEle* polTmp = operStack.pop();
 	while (polTmp->getOper() != pleft) {
 		resultStack.push(polTmp);
-		polTmp = operStack.top();
-		operStack.pop();
+		polTmp = operStack.pop();
 	}
 }
 
+polEle* polStack::pop() {
+	int siz = this->size();
+	if (siz < 1) throw logic_error("stack " + name + " is empty - cannot pop");
+	polEle* result = this->back();
+	this->pop_back();
+	return result;
+}
 
-polExp::polExp(const string& str) {
-	string tok {""};
-	for (auto c : str + " ") {
-		switch(c) {
-		case ' ': doToken(tok); break;
-		case '(' : doLeft(); break;
-		case ')' : doRight(); break;
-		default: tok += c;
-		}
+void polStack::push(polEle* pe) {
+	this->push_back(pe);
+}
+
+polEle* polStack::peek() {
+	return this->back();
+}
+
+
+polExp::polExp(const string& s) {
+	string str {s};
+	static string operList = "\\=\\<\\>\\!\\+\\-\\/\\*\\%\\^";
+	regReplace(str, "\\s+", " ");
+	regReplace(str, "(^\\s|\\s$)", "");
+	regReplace(str, "([" + operList + "])([a-zA-Z0-9])", "$1 $2");
+	regReplace(str, "([a-zA-Z0-9])([" + operList + "])", "$1 $2");
+	vector<string> tokens = regSplit(str, " ");
+	for (auto tok : tokens) {
+		doToken(tok);
 	}
 }
 
@@ -162,6 +217,10 @@ bool polExp::eval(map<string, string>& vm, map<string, char>& tm) {
 
 
 int main() {
+	string apa = " x  >5 and k= 3 or  k*3=2 or k/2=1/2";
+	cout << "/" << apa << "/" << endl;
+	strTrim(apa);
+	cout << "/" << apa << "/" << endl;
 	polExp exp {"x > 5"};
 	map<string, string> vmap {{"x", "3"}};
 	map<string, char> tmap {{"x", 'i'}};
