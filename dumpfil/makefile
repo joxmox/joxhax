@@ -51,6 +51,9 @@ clean :
 
 test : $(bin)test
 	$(bin)test
+	
+test4 : $(bin)test4
+	$(bin)test4
 
 $(bin)test : $(obj)test.o $(obj)strings.o $(obj)Condition.o
 	$(link)
@@ -59,6 +62,12 @@ test2 : $(bin)test2
 	$(bin)test2
 
 $(bin)test2 : $(obj)test2.o 
+	$(link)
+	
+test4 : $(bin)test4
+	$(bin)test4
+
+$(bin)test3 : $(obj)test3.o 
 	$(link)
 	
 $(obj)%.o : $(src)%.cpp
