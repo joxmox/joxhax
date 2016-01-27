@@ -55,16 +55,16 @@ test : $(bin)test
 test5 : $(bin)test5
 	$(bin)test5
 
-$(bin)test5 : $(obj)test5.o $(obj)strings.o $(obj)rpnExp.o
+$(bin)test5 : $(obj)test5.o $(obj)strings.o $(obj)rpnExpress.o
 	$(link)
 	
-$(obj)test5.o : $(src)test5.cpp $(src)rpnExp.hpp $(src)strings.hpp
+$(obj)test5.o : $(src)test5.cpp $(src)rpnExpress.hpp $(src)strings.hpp
 	$(compile)
 	
 $(obj)strings.o : $(src)strings.cpp $(src)strings.hpp
 	$(compile)
 	
-$(obj)rpnExp.o : $(src)rpnExp.cpp $(src)rpnExp.hpp $(src)strings.hpp
+$(obj)rpnExpress.o : $(src)rpnExpress.cpp $(src)rpnExpress.hpp $(src)strings.hpp
 	$(compile)
 	
 

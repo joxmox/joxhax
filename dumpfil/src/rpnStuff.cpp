@@ -5,13 +5,16 @@
  *      Author: joxmox
  */
 
+#include "rpnStuff.hpp"
+
 #include <string>
 #include <iostream>
 #include <vector>
 #include <map>
 
 #include "strings.hpp"
-#include "rpnExp.hpp"
+
+namespace rpn {
 
 using namespace std;
 
@@ -38,35 +41,35 @@ bool okVariable(const string& s) {
 
 // RpnStack
 
-rpnEle* rpnStack::pop() {
+Element* Stack::pop() {
 	int siz = this->size();
 	if (siz < 1) throw logic_error("stack " + name + " is empty - cannot pop");
-	rpnEle* result = this->back();
+	Element* result = this->back();
 	this->pop_back();
 	return result;
 }
 
-void rpnStack::push(rpnEle* pe) {
+void Stack::push(Element* pe) {
 	cout << "pushing to stack " << name << endl;
 	this->push_back(pe);
 }
 
-rpnEle* rpnStack::peek() {
+Element* Stack::peek() {
 	if (this->size() < 1) logic_error("stack " + name + " is empty - cannot peek");
 	return this->back();
 }
 
-void rpnStack::dump() {
+void Stack::dump() {
 	cout << "Stack: " << name << endl;
 	for (int i=0; i<this->size(); i++) {
-		rpnEle* e = this->at(i);
+		Element* e = this->at(i);
 		cout << "" << i << ": " << this->at(i)->getTxt() << endl;
 	}
 }
 
 // rpnExp (main class)
 
-rpnExp::rpnExp(const string& s) {
+Expression::Expression(const string& s) {
 	string str {s};
 	static string operList = "\\=\\<\\>\\!\\+\\-\\/\\*\\%\\^";
 	s_replace(str, "\\s+", " ");
@@ -77,12 +80,12 @@ rpnExp::rpnExp(const string& s) {
 	for (auto tok : tokens) {
 		cout << "processing token: " << tok << endl;
 		if (tok == "(") {
-			operStack.push(new rpnEle {tok, pleft});
+			operStack.push(new Element {tok, pleft});
 		}
-		else if (isQuoted(tok)) resultStack.push(new rpnEle {tok, sval, tok});
-		else if (isNumeric(tok)) resultStack.push(new rpnEle {tok, nval, tok});
+		else if (isQuoted(tok)) resultStack.push(new Element {tok, sval, tok});
+		else if (isNumeric(tok)) resultStack.push(new Element {tok, nval, tok});
 		else if (operName.find(tok) != operName.end()) {
-			rpnEle* e = new rpnEle {tok, operName[tok]};
+			Element* e = new Element {tok, operName[tok]};
 			if (operStack.getSize() > 0) {
 				int x = (operStack.peek())->getPrec();
 				while (operStack.getSize() > 0 && operStack.peek()->getPrec() >= e->getPrec()) {
@@ -92,14 +95,14 @@ rpnExp::rpnExp(const string& s) {
 			operStack.push(e);
 		}
 		else if (tok == ")") {
-			rpnEle* e = operStack.pop();
+			Element* e = operStack.pop();
 			while (e->getOper() != pleft) {
 				resultStack.push(e);
 				e = operStack.pop();
 			}
 		}
 		else if (okVariable(tok)) {
-			resultStack.push(new rpnEle {tok, vnam, tok});
+			resultStack.push(new Element {tok, vnam, tok});
 		}
 	}
 	while (operStack.getSize() > 0) {
@@ -108,14 +111,14 @@ rpnExp::rpnExp(const string& s) {
 }
 
 
-int rpnExp::eval(map<string, string>& vm) {
+int Expression::evalI(map<string, int>& vm) {
 	vector<int> evalStack;
 	cout << "oper stack size: " << operStack.size() << endl;
 	for (auto e : resultStack) {
 		switch(e->getType()) {
 		case sval: throw logic_error("cannot evaluate as integer expressions where strings found");
 		case nval: evalStack.push_back(stoi(e->getValue())); break;
-		case vnam: evalStack.push_back(stoi(vm[e->getValue()])); break;
+		case vnam: evalStack.push_back(vm[e->getValue()]); break;
 		case oper: {
 			int a = evalStack.back(); evalStack.pop_back();
 			int b = evalStack.back(); evalStack.pop_back();
@@ -131,9 +134,49 @@ int rpnExp::eval(map<string, string>& vm) {
 	return evalStack.back();
 }
 
-void rpnExp::dump() {
+bool Expression::evalB(map<string, string>& vm) {
+	vector<string> evalStack;
+	for (auto e : resultStack) {
+		switch (e->getType()) {
+		case sval: evalStack.push_back(e->getValue()); break;
+		case nval: evalStack.push_back(e->getValue()); break;
+		case vnam: evalStack.push_back(vm[e->getValue()]); break;
+		case oper:
+			string a = evalStack.back();
+			bool an = isNumeric(a);
+			evalStack.pop_back();
+			string b = evalStack.back();
+			bool bn = isNumeric(b);
+			bool nn = isNumeric(b) && isNumeric(a);
+			evalStack.pop_back();
+			string c;
+			switch (e->getOper()) {
+			case oplu:
+				if (nn) {
+					c = to_string(stod(a) + stod(b));
+				} else {
+					c = a + b;
+				}
+			case omul:
+				if (nn) {
+					c = to_string(stod(a) * stod(b));
+				} else {
+					throw logic_error("cannot multiply two string values")
+				}
+			case ceq:
+				bool f;
+				if (nn)đ
+
+		}
+	}
+
+}
+
+void Expression::dump() {
 	operStack.dump();
 	resultStack.dump();
+}
+
 }
 
 

@@ -5,15 +5,18 @@
  *      Author: joxmox
  */
 
-#ifndef SRC_RPNEXP_HPP_
-#define SRC_RPNEXP_HPP_
+#ifndef SRC_RPNSTUFF_HPP_
+#define SRC_RPNSTUFF_HPP_
 
 #include <string>
 #include <vector>
+#include <map>
+
+namespace rpn {
 
 using namespace std;
 
-enum rpnType {pund, sval, nval, vnam, oper};
+enum rpnType {pund, sval, nval, bval, vnam, oper};
 enum operType {ound, pleft, oplu, omul, ceq, cgt, land};
 static map<string, operType> operName {
 	{"+", oplu},
@@ -34,7 +37,7 @@ static map<operType, int> operValue {
 
 
 
-class rpnEle {
+class Element {
 public:
 private:
 	string txt = "";
@@ -42,11 +45,14 @@ private:
 	operType oper = ound;
 	int prec = 0;
 	string value = "";
-	rpnEle* next = nullptr;
+	string sValue = "";
+	double nValue = 0;
+	bool bValue = false;
+	Element* next = nullptr;
 public:
-	rpnEle() = delete;
-	rpnEle(const string& t, operType ot): type(rpnType::oper), oper(ot), txt(t), prec(operValue[ot]) {}
-	rpnEle(const string& t, rpnType pt, const string& s): type(pt), value(s), txt(t) {}
+	Element() = delete;
+	Element(const string& t, operType ot): type(rpnType::oper), oper(ot), txt(t), prec(operValue[ot]) {}
+	Element(const string& t, rpnType pt, const string& s): type(pt), value(s), txt(t) {}
 	int getPrec() {return prec;}
 	rpnType getType() {return type;}
 	operType getOper() {return oper;}
@@ -54,29 +60,32 @@ public:
 	string getTxt() {return txt;}
 };
 
-class rpnStack : public vector<rpnEle*> {
+class Stack : public vector<Element*> {
 	string name;
 public:
-	rpnStack(const string& n): name(n) {}
-	void push(rpnEle*);
-	rpnEle* pop();
-	rpnEle* peek();
+	Stack(const string& n): name(n) {}
+	void push(Element*);
+	Element* pop();
+	Element* peek();
 	void dump();
 	int getSize() {return this->size();}
 };
 
-class rpnExp {
+class Expression {
 	void doToken(const string&);
 	void doLeft();
 	void doRight();
-	rpnStack resultStack {"result"};
-	rpnStack operStack {"operator"};
+	Stack resultStack {"result"};
+	Stack operStack {"operator"};
 public:
-	rpnExp(const string&);
-	int eval(map<string, string>&);
+	Expression(const string&);
+	int evalI(map<string, int>&);
+	int evalF(map<string, double&>);
+	bool evalB(map<string, string>&);
 	void dump();
 };
 
+}
 
 
-#endif /* SRC_RPNEXP_HPP_ */
+#endif /* SRC_RPNSTUFF_HPP_ */
