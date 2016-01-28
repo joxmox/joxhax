@@ -12,6 +12,8 @@
 #include <vector>
 #include <map>
 
+namespace jox {
+
 namespace rpn {
 
 using namespace std;
@@ -85,6 +87,7 @@ public:
 	void dump();
 };
 
+}
 }
 
 

@@ -14,6 +14,7 @@
 
 #include "strings.hpp"
 
+namespace jox {
 namespace rpn {
 
 using namespace std;
@@ -178,5 +179,5 @@ void Expression::dump() {
 }
 
 }
-
+}
 

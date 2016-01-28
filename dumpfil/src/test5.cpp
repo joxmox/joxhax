@@ -12,15 +12,17 @@
 
 using namespace std;
 
+using namespace jox::rpn;
+
 int main() {
-	rpn::Expression pe {" 5 + x * 3  "};
+	Expression pe {" 5 + x * 3  "};
 	pe.dump();
 	map<string, string> m;
 	m["x"] = "2";
 	m["y"] = "3";
 	m["z"] = "-1";
 	cout << pe.evalI(m) << endl;
-	rpn::Expression p2 {"5 * x + z * ( y + 3 )"};
+	Expression p2 {"5 * x + z * ( y + 3 )"};
 	cout << p2.evalI(m) << endl;
 }
 
