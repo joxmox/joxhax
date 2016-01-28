@@ -5,8 +5,9 @@
  *      Author: joxmox
  */
 
-#include "Expression.hpp"
+#include <iostream>
 
+#include "Expression.hpp"
 #include "tokenize.hpp"
 
 namespace jox {
@@ -43,7 +44,8 @@ void applyOperator(string& op, vector<string>& stack, varMap& vm) {
 	stack.pop_back();
 	if (binaryOperator(op)) {
 		if (stack.size() == 0) throw logic_error("operand stack is empty");
-		b = stack.back();
+		b = a;
+		a = stack.back();
 		stack.pop_back();
 	}
 	substitute(a, b, vm);
@@ -118,7 +120,15 @@ vector<string> InfixExpress::getInfixTokens() {
 
 string InfixExpress::evaluateString(varMap& vm) {
 	vector<string>inTok = tokenize(express);
+	cout << "result from tokenize:" << endl;
+	for (auto t : inTok) {
+		cout << "  " << t << endl;
+	}
 	vector<string> postTok = infix2postfix(inTok);
+	cout << "result from infix2postfix:" << endl;
+	for (auto t : postTok) {
+		cout << "  " << t << endl;
+	}
 	return eval(postTok, vm);
 }
 }

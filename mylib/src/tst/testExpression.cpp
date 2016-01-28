@@ -11,10 +11,10 @@
 using namespace std;
 
 int main()  {
-	jox::InfixExpress myExp {"2 + 3"};
+	jox::InfixExpress myExp {"x != y"};
 	jox::varMap vm;
-	vm["x"] = "4";
-	vm["y"] = "-1";
+	vm["x"] = "4.5";
+	vm["y"] = "-1.5";
 	vm["z"] = "2";
 	cout << myExp.evaluateString(vm) << endl;
 }
