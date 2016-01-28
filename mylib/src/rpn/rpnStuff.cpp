@@ -38,6 +38,35 @@ bool okVariable(const string& s) {
 	return true;
 }
 
+// Element Class
+
+Element::Element(const string& txt, operType type) {
+	this->type = rpnType::oper;
+	this->txt = txt;
+	this->oper = type;
+	this->prec = operValue[oper];
+}
+
+Element::Element(const string& txt, rpnType type, const string& val) {
+	this->type = type;
+	this->txt = txt;
+	switch (type) {
+	case pund:
+		throw logic_error("cannot create rpn Element with undefined type");
+		break;
+	case nval:
+		nValue = stod(val);
+		break;
+	case bval:
+		bValue = stoi(val);
+		break;
+	default:
+		sval = val;
+	}
+}
+
+
+
 
 // RpnStack
 
@@ -135,12 +164,18 @@ int Expression::evalI(map<string, int>& vm) {
 }
 
 bool Expression::evalB(map<string, string>& vm) {
-	vector<string> evalStack;
+	Stack evalStack;
 	for (auto e : resultStack) {
 		switch (e->getType()) {
-		case sval: evalStack.push_back(e->getValue()); break;
-		case nval: evalStack.push_back(e->getValue()); break;
-		case vnam: evalStack.push_back(vm[e->getValue()]); break;
+		case sval:
+			evalStack.push(e);
+			break;
+		case nval:
+			evalStack.push(e);
+			break;
+		case vnam:
+			evalStack.push(e);
+			break;
 		case oper:
 			string a = evalStack.back();
 			bool an = isNumeric(a);
@@ -161,11 +196,16 @@ bool Expression::evalB(map<string, string>& vm) {
 				if (nn) {
 					c = to_string(stod(a) * stod(b));
 				} else {
-					throw logic_error("cannot multiply two string values")
+					throw logic_error("cannot multiply two string values");
 				}
 			case ceq:
 				bool f;
-				if (nn)đ
+				if (nn) {
+					c = to_string((a == b));
+				} else if (an && !bn) {
+					c = to_string()
+				}
+				}
 
 		}
 	}

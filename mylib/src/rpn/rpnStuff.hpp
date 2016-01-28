@@ -48,11 +48,10 @@ private:
 	string sValue = "";
 	double nValue = 0;
 	bool bValue = false;
-	Element* next = nullptr;
 public:
 	Element() = delete;
-	Element(const string& t, operType ot): type(rpnType::oper), oper(ot), txt(t), prec(operValue[ot]) {}
-	Element(const string& t, rpnType pt, const string& s): type(pt), value(s), txt(t) {}
+	Element(const string& t, operType ot);
+	Element(const string& t, rpnType pt, const string& s);
 	int getPrec() {return prec;}
 	rpnType getType() {return type;}
 	operType getOper() {return oper;}
